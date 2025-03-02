@@ -1,0 +1,717 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Frames</title>
+
+  <style>
+    .filter-container {
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      margin: 0 5px;
+      border: none;
+      border-radius: 20px;
+      background-color: #f0f0f0;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-bottom: 8px;
+    }
+
+    .filter-btn.active {
+      background-color: #ff0000;
+      color: white;
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .video-wrapper {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      /* 16:9 Aspect Ratio */
+      background-color: #000;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      pointer-events: none;
+      /* Prevent interaction with grid videos */
+    }
+
+    .video-info {
+      padding: 10px 0;
+    }
+
+    .video-number {
+      display: inline;
+      font-size: 1.1em;
+      font-weight: bold;
+      color: #ff0000;
+      margin-right: 8px;
+      white-space: nowrap;
+    }
+
+    .video-title {
+      display: inline;
+      font-size: 1.1em;
+      font-weight: bold;
+      margin-bottom: 4px;
+      word-wrap: break-word;
+    }
+
+    .video-title-container {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .video-length-container {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .video-company {
+      display: block;
+      color: #666;
+      font-size: 0.9em;
+    }
+
+    .video-id {
+      display: block;
+      color: #999;
+      font-size: 0.8em;
+      font-family: monospace;
+    }
+
+    .video-length {
+      display: inline-block;
+      color: #666;
+      font-size: 0.9em;
+      margin-left: 0;
+      padding: 2px 6px;
+      background-color: rgba(0, 0, 0, 0.05);
+      border-radius: 4px;
+    }
+
+    /* Modal styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000000;
+      z-index: 1000;
+      overflow-y: auto;
+      padding: 40px 0;
+    }
+
+    .modal-container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .modal-video-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .modal-video-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: white;
+      padding: 0 20px;
+    }
+
+    .modal-video-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-video-number {
+      color: #ff0000;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    .modal-video-title {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    .modal-video-company {
+      color: #999;
+    }
+
+    .modal-video-player {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .modal-video-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      flex-grow: 1;
+    }
+
+    .modal-video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 12px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: -30px;
+      right: 0;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 8px;
+    }
+
+    .modal-nav-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      padding: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s;
+    }
+
+    .modal-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .suggested-videos-section {
+      margin-top: 40px;
+    }
+
+    .suggested-videos-title {
+      color: white;
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      padding-left: 20px;
+    }
+
+    .suggested-videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 0 20px;
+    }
+
+    /* Add new style for suggested videos title */
+    .suggested-videos-grid .video-title {
+      color: white;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="filter-container" id="filterContainer"></div>
+
+  <div class="video-grid" id="videoGallery"></div>
+
+  <!-- Modal -->
+
+  <div class="modal-overlay" id="videoModal">
+
+    <div class="modal-container">
+
+      <button class="modal-close">×</button>
+
+      <div class="modal-video-section">
+
+        <div class="modal-video-info">
+
+          <div class="modal-video-left">
+
+            <span class="modal-video-number"></span>
+
+            <span class="modal-video-title"></span>
+
+          </div>
+
+          <span class="modal-video-company"></span>
+
+        </div>
+
+        <div class="modal-video-player">
+
+          <button class="modal-nav-btn" id="prevButton" onclick="navigateVideo(-1)">←</button>
+
+          <div class="modal-video-container" id="modalVideoContainer"></div>
+
+          <button class="modal-nav-btn" id="nextButton" onclick="navigateVideo(1)">→</button>
+
+        </div>
+
+      </div>
+
+      <div class="suggested-videos-section">
+
+        <h2 class="suggested-videos-title">Suggested Videos</h2>
+
+        <div class="suggested-videos-grid" id="suggestedVideos"></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Video data
+    const videoData = {
+    "videos": [
+        {
+            "number": 1,
+            "id": "1PWJqjd2d6M",
+            "title": "For All Things Worth Saving",
+            "company": "Dropbox",
+            "category": ["Story", "2D", "UI"],
+            "length": "49s"
+        },
+        {
+            "number": 2,
+            "id": "bv936eeoxmQ",
+            "title": "Framer Design: Design on an intuitive Canvas",
+            "company": "Framer",
+            "category": ["2D", "UI"],
+            "length": "59s"
+        },
+        {
+            "number": 3,
+            "id": "5XxIwPKMlek",
+            "title": "Introducing Wix Studio",
+            "company": "Wix",
+            "category": ["2D", "3D", "UI"],
+            "length": "1m 43s"
+        },
+        {
+            "number": 4,
+            "id": "Er04BDbtSIg",
+            "title": "School of Motion: Join the Movement",
+            "company": "School of Motion",
+            "category": ["2D", "Faux 3D", "Story"],
+            "length": "1m 50s"
+        },
+        {
+            "number": 5,
+            "id": "pBy1zgt0XPc",
+            "title": "What is GitHub?",
+            "company": "GitHub",
+            "category": ["Story", "2D", "3D", "Faux 3D"],
+            "length": "2m 43s"
+        },
+        {
+            "number": 6,
+            "id": "EDATYbzYGiE",
+            "title": "What is Slack? Your Work OS",
+            "company": "Slack",
+            "category": ["2D", "UI"],
+            "length": "2m 48s"
+        }
+    ]
+};
+
+    // Function to load and display videos
+    async function loadVideos() {
+      try {
+        // Get unique categories (excluding 'All')
+        const categories = [...new Set(videoData.videos.flatMap(video => video.category))];
+        
+        // Create filter buttons
+        const filterContainer = document.getElementById('filterContainer');
+        
+        // Create clear filters button (initially hidden)
+        const clearButton = document.createElement('button');
+        clearButton.className = 'filter-btn clear-filters';
+        clearButton.textContent = 'Clear filters';
+        clearButton.style.display = 'none';
+        clearButton.addEventListener('click', () => {
+          // Remove active class from all category buttons
+          document.querySelectorAll('.filter-btn:not(.clear-filters)').forEach(btn => btn.classList.remove('active'));
+          // Hide clear button
+          clearButton.style.display = 'none';
+          // Display all videos
+          displayVideos(videoData.videos);
+          // Update URL to remove filter parameters
+          updateUrlFilters([]);
+        });
+        filterContainer.appendChild(clearButton);
+        
+        // Create category filter buttons
+        categories.forEach(category => {
+          const button = document.createElement('button');
+          button.className = 'filter-btn';
+          button.textContent = category;
+          button.setAttribute('data-category', category);
+          button.addEventListener('click', (event) => filterVideos(category, videoData.videos, event));
+          filterContainer.appendChild(button);
+        });
+        
+        // Check for filter parameters in URL and apply them
+        const urlFilters = getUrlFilters();
+        if (urlFilters.length > 0) {
+          // Activate filter buttons based on URL parameters
+          urlFilters.forEach(category => {
+            const button = document.querySelector(`.filter-btn[data-category="${category}"]`);
+            if (button) {
+              button.classList.add('active');
+              clearButton.style.display = 'inline-block';
+            }
+          });
+          
+          // Filter videos based on URL parameters
+          const filteredVideos = videoData.videos.filter(video => 
+            urlFilters.every(cat => video.category.includes(cat))
+          );
+          displayVideos(filteredVideos);
+        } else {
+          // Initial load of all videos if no filters in URL
+          displayVideos(videoData.videos);
+        }
+
+        // Check URL for video ID after videos are loaded
+        checkUrlForVideo();
+      } catch (error) {
+        console.error('Error loading videos:', error);
+      }
+    }
+
+    // Function to get filters from URL
+    function getUrlFilters() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const filters = urlParams.get('filters');
+      return filters ? filters.split(',') : [];
+    }
+
+    // Function to update URL with current filters
+    function updateUrlFilters(activeFilters) {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (activeFilters.length > 0) {
+        urlParams.set('filters', activeFilters.join(','));
+      } else {
+        urlParams.delete('filters');
+      }
+      
+      // Preserve the frame parameter if it exists
+      const frameParam = urlParams.get('frame');
+      const newUrl = frameParam 
+        ? `?${urlParams.toString()}`
+        : activeFilters.length > 0 ? `?${urlParams.toString()}` : window.location.pathname;
+        
+      window.history.replaceState({}, '', newUrl);
+    }
+
+    // Function to filter videos
+    function filterVideos(category, videos, event) {
+      const buttons = document.querySelectorAll('.filter-btn:not(.clear-filters)');
+      const clearButton = document.querySelector('.clear-filters');
+      
+      // If shift is not held, deactivate all buttons except the clicked one
+      if (!event.shiftKey) {
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+      } else {
+        // Toggle the clicked button
+        event.target.classList.toggle('active');
+      }
+
+      // Get all active categories
+      const activeCategories = Array.from(buttons)
+        .filter(btn => btn.classList.contains('active'))
+        .map(btn => btn.getAttribute('data-category'));
+
+      // Show/hide clear button based on active filters
+      clearButton.style.display = activeCategories.length > 0 ? 'inline-block' : 'none';
+
+      // Update URL with current filters
+      updateUrlFilters(activeCategories);
+
+      // Filter videos that match ALL of the selected categories (AND logic)
+      const filteredVideos = activeCategories.length > 0
+        ? videos.filter(video => activeCategories.every(cat => video.category.includes(cat)))
+        : videos;
+
+      displayVideos(filteredVideos);
+    }
+
+    let currentVideoIndex = 0;
+    let currentVideos = [];
+    // Function to open modal with video
+    function openModal(videoId) {
+      const modal = document.getElementById('videoModal');
+      currentVideos = document.querySelectorAll('.video-wrapper');
+      currentVideoIndex = Array.from(currentVideos).findIndex(
+        wrapper => wrapper.querySelector('iframe').src.includes(videoId)
+      );
+      updateModalVideo();
+      modal.style.display = 'flex';
+      window.scrollTo(0, 0); // Ensure page scrolls to top
+      modal.scrollTo(0, 0); // Ensure modal content scrolls to top
+      
+      // Add keyboard listener
+      document.addEventListener('keydown', handleKeyPress);
+      
+      // Update URL preserving filter parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.set('frame', videoId);
+      window.history.replaceState({}, '', `?${urlParams.toString()}`);
+    }
+    // Function to close modal
+    function closeModal() {
+      const modal = document.getElementById('videoModal');
+      const modalVideoContainer = document.getElementById('modalVideoContainer');
+      modal.style.display = 'none';
+      modalVideoContainer.innerHTML = '';
+      
+      // Remove keyboard listener
+      document.removeEventListener('keydown', handleKeyPress);
+      
+      // Get current URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      // Remove frame parameter
+      urlParams.delete('frame');
+      
+      // Update URL, preserving any filter parameters
+      const remainingParams = urlParams.toString();
+      const newUrl = remainingParams ? `?${remainingParams}` : window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+    // Function to check for video ID in URL and open modal if present
+    function checkUrlForVideo() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const videoId = urlParams.get('frame');
+      if (videoId) {
+        // Get all video wrappers
+        currentVideos = document.querySelectorAll('.video-wrapper');
+        if (currentVideos.length > 0) {
+          openModal(videoId);
+        }
+      }
+    }
+    // Function to navigate between videos
+    function navigateVideo(direction) {
+      currentVideoIndex = (currentVideoIndex + direction + currentVideos.length) % currentVideos.length;
+      const videoId = currentVideos[currentVideoIndex].querySelector('iframe').src.split('?')[0].split('/').pop();
+      
+      // Update URL preserving filter parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.set('frame', videoId);
+      window.history.replaceState({}, '', `?${urlParams.toString()}`);
+      
+      updateModalVideo();
+    }
+    // Function to update modal video
+    function updateModalVideo() {
+      const modalVideoContainer = document.getElementById('modalVideoContainer');
+      const currentVideo = currentVideos[currentVideoIndex];
+      const videoId = currentVideo.querySelector('iframe').src.split('?')[0].split('/').pop();
+      // Update video metadata
+      const number = currentVideo.querySelector('.video-number').textContent;
+      const title = currentVideo.querySelector('.video-title').textContent;
+      const companyAndCategory = currentVideo.querySelector('.video-company').textContent;
+      document.querySelector('.modal-video-number').textContent = number;
+      document.querySelector('.modal-video-title').textContent = title;
+      document.querySelector('.modal-video-company').textContent = companyAndCategory;
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&vq=hd1080`;
+      iframe.title = "YouTube video player";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      modalVideoContainer.innerHTML = '';
+      modalVideoContainer.appendChild(iframe);
+      // Update navigation buttons
+      document.getElementById('prevButton').disabled = currentVideoIndex === 0;
+      document.getElementById('nextButton').disabled = currentVideoIndex === currentVideos.length - 1;
+      // Update suggested videos
+      updateSuggestedVideos(videoId);
+    }
+    // Function to update suggested videos
+    function updateSuggestedVideos(currentVideoId) {
+      const suggestedVideosContainer = document.getElementById('suggestedVideos');
+      suggestedVideosContainer.innerHTML = '';
+      
+      // Get active filters
+      const activeFilters = Array.from(document.querySelectorAll('.filter-btn.active'))
+        .map(btn => btn.getAttribute('data-category'));
+      
+      // Get all videos from the main grid
+      const allVideos = Array.from(document.querySelectorAll('.video-wrapper'));
+      
+      // Filter videos based on active filters and current video
+      let suggestedVideos = allVideos
+        .filter(wrapper => !wrapper.querySelector('iframe').src.includes(currentVideoId));
+        
+      // Apply category filters if active
+      if (activeFilters.length > 0) {
+        suggestedVideos = suggestedVideos.filter(wrapper => {
+          const categories = wrapper.querySelector('.video-company').textContent.split('•').map(cat => cat.trim());
+          return activeFilters.every(filter => categories.includes(filter));
+        });
+      }
+      
+      // Shuffle and limit to 6 videos
+      suggestedVideos = suggestedVideos
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 6);
+      
+      // Create suggested video elements
+      suggestedVideos.forEach(originalVideo => {
+        const videoWrapper = originalVideo.cloneNode(true);
+        // Hide the number in suggested videos
+        const numberSpan = videoWrapper.querySelector('.video-number');
+        if (numberSpan) {
+          numberSpan.style.display = 'none';
+        }
+        videoWrapper.onclick = () => {
+          const videoId = videoWrapper.querySelector('iframe').src.split('?')[0].split('/').pop();
+          // Update URL preserving filter parameters
+          const urlParams = new URLSearchParams(window.location.search);
+          urlParams.set('frame', videoId);
+          window.history.replaceState({}, '', `?${urlParams.toString()}`);
+          openModal(videoId);
+          window.scrollTo(0, 0);
+        };
+        suggestedVideosContainer.appendChild(videoWrapper);
+      });
+    }
+    // Handle keyboard navigation
+    function handleKeyPress(event) {
+      switch (event.key) {
+        case 'ArrowLeft':
+          navigateVideo(-1);
+          break;
+        case 'ArrowRight':
+          navigateVideo(1);
+          break;
+        case 'Escape':
+          closeModal();
+          break;
+      }
+    }
+    // Function to display videos
+    function displayVideos(videos) {
+      const videoGallery = document.getElementById('videoGallery');
+      videoGallery.innerHTML = ''; // Clear existing videos
+      // Sort videos in descending order by number
+      const sortedVideos = [...videos].sort((a, b) => b.number - a.number);
+      sortedVideos.forEach(video => {
+        const videoWrapper = document.createElement('div');
+        videoWrapper.className = 'video-wrapper';
+        videoWrapper.onclick = () => {
+          openModal(video.id);
+        };
+        const videoContainer = document.createElement('div');
+        videoContainer.className = 'video-container';
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube.com/embed/${video.id}?mute=1&controls=0&rel=0&autoplay=1&loop=1&playlist=${video.id}&showinfo=0&cc_load_policy=0&modestbranding=1&vq=small`;
+        iframe.title = "YouTube video player";
+        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        iframe.loading = "lazy";
+        const videoInfo = document.createElement('div');
+        videoInfo.className = 'video-info';
+        const titleContainer = document.createElement('div');
+        titleContainer.className = 'video-title-container';
+        const numberSpan = document.createElement('span');
+        numberSpan.className = 'video-number';
+        numberSpan.textContent = `${video.number}.`;
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'video-title';
+        titleSpan.textContent = video.title;
+        const lengthContainer = document.createElement('div');
+        lengthContainer.className = 'video-length-container';
+        const lengthSpan = document.createElement('span');
+        lengthSpan.className = 'video-length';
+        lengthSpan.textContent = video.length;
+        const companySpan = document.createElement('span');
+        companySpan.className = 'video-company';
+        companySpan.textContent = `${video.company} • ${video.category.join(' • ')}`;
+        videoContainer.appendChild(iframe);
+        titleContainer.appendChild(numberSpan);
+        titleContainer.appendChild(titleSpan);
+        lengthContainer.appendChild(lengthSpan);
+        videoInfo.appendChild(titleContainer);
+        videoInfo.appendChild(lengthContainer);
+        videoInfo.appendChild(companySpan);
+        videoWrapper.appendChild(videoContainer);
+        videoWrapper.appendChild(videoInfo);
+        videoGallery.appendChild(videoWrapper);
+      });
+    }
+    // Close modal when clicking outside the video or on close button
+    document.getElementById('videoModal').addEventListener('click', (e) => {
+      if (e.target.id === 'videoModal' || e.target.classList.contains('modal-close')) {
+        closeModal();
+      }
+    });
+    // Load videos when the page is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      loadVideos();
+    });
+  </script>
+
+</body>
+
+</html>
