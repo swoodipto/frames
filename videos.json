@@ -53,8 +53,16 @@
             "id": "_qCBg_Wsr8M",
             "title": "Welcome to the Age of No-code",
             "company": "Webflow",
-            "category": ["Story", "2D", "UI", "Faux 3D"],
+            "category": ["Story", "2D", "Faux 3D"],
             "length": "1m 29s"
+        },
+        {
+            "number": 8,
+            "id": "sIfP9h-H23s",
+            "title": "Introducing Spline",
+            "company": "Spline",
+            "category": ["Story", "2D", "3D"],
+            "length": "1m 25s"
         }
     ]
 }
