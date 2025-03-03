@@ -13,6 +13,40 @@
   <title>Frames</title>
 
   <style>
+    :root {
+      /* Typography*/
+      --system-font: ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+
+      /* Colors */
+      --primary-light: #ffffff;
+      --primary-dark: #000000;
+      --accent: #0000FF;
+
+      /* Shades */
+      --primary-light-100: #FAFAFA;
+      --primary-light-200: #F2F2F2;
+      --primary-light-300: #ECECEC;
+      --primary-light-400: #E5E5E5;
+
+      --primary-dark-100: #CCCCCC;
+      --primary-dark-200: #999999;
+      --primary-dark-300: #666666;
+      --primary-dark-400: #333333;
+
+      --accent-100: #D3D3FF;
+      --accent-200: #A6A6FF;
+      --accent-300: #7A7AFF;
+      --accent-400: #4D4DFF;
+
+      /* Color System */
+      --primary-light-fg: var(--primary-dark);
+      --primary-dark-fg: var(--primary-light);
+      --accent-fg: var(--primary-light);
+    }
+    html {
+      font-family: var(--system-font);
+      font-size: 32px;
+    }
     .filter-container {
       padding: 20px;
       text-align: center;
