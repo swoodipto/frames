@@ -63,22 +63,6 @@
             "company": "Spline",
             "category": ["Story", "2D", "3D"],
             "length": "1m 25s"
-        },
-        {
-            "number": 9,
-            "id": "gUUDNIXJJ6c",
-            "title": "Google / IO 2024",
-            "company": "Google",
-            "category": ["2D", "Faux 3D", "UI"],
-            "length": "1m 16s"
-        },
-        {
-            "number": 10,
-            "id": "5yugwU71vaI",
-            "title": "Google Pixel design system",
-            "company": "Google",
-            "category": ["2D", "Design System"],
-            "length": "28s"
         }
     ]
 }
