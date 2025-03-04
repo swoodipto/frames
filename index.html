@@ -527,63 +527,18 @@
   </div>
 
   <script>
-    // Video data
-    const videoData = {
-    "videos": [
-        {
-            "number": 1,
-            "id": "1PWJqjd2d6M",
-            "title": "For All Things Worth Saving",
-            "company": "Dropbox",
-            "category": ["Story", "2D", "UI"],
-            "length": "49s"
-        },
-        {
-            "number": 2,
-            "id": "bv936eeoxmQ",
-            "title": "Framer Design: Design on an intuitive Canvas",
-            "company": "Framer",
-            "category": ["2D", "UI"],
-            "length": "59s"
-        },
-        {
-            "number": 3,
-            "id": "5XxIwPKMlek",
-            "title": "Introducing Wix Studio",
-            "company": "Wix",
-            "category": ["2D", "3D", "UI"],
-            "length": "1m 43s"
-        },
-        {
-            "number": 4,
-            "id": "Er04BDbtSIg",
-            "title": "School of Motion: Join the Movement",
-            "company": "School of Motion",
-            "category": ["2D", "Faux 3D", "Story"],
-            "length": "1m 50s"
-        },
-        {
-            "number": 5,
-            "id": "pBy1zgt0XPc",
-            "title": "What is GitHub?",
-            "company": "GitHub",
-            "category": ["Story", "2D", "3D", "Faux 3D"],
-            "length": "2m 43s"
-        },
-        {
-            "number": 6,
-            "id": "EDATYbzYGiE",
-            "title": "What is Slack? Your Work OS",
-            "company": "Slack",
-            "category": ["2D", "UI"],
-            "length": "2m 48s"
-        }
-    ]
-};
+    let videoData = null;
 
     // Function to load and display videos
     async function loadVideos() {
       try {
+        // Fetch the JSON file
+        const response = await fetch('videos.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        videoData = await response.json();
+
         // Get unique categories (excluding 'All')
         const categories = [...new Set(videoData.videos.flatMap(video => video.category))];
         
