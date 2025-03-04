@@ -27,6 +27,12 @@
       --font-16: .5rem;
       --font-16-letter-spacing: 0.04em;
 
+      --font-12: .4rem;
+      --font-12-letter-spacing: 0em;
+
+      --font-8: .25rem;
+      --font-8-letter-spacing: 0.15em;
+
       /* Colors */
       --primary-light: #ffffff;
       --primary-dark: #000000;
@@ -57,6 +63,7 @@
 
       /* UI */
       --border-radius: 8px;
+      --border-radius-small: 4px;
       --border-radius-round: 1000px;
 
       /* Layout */
@@ -132,6 +139,26 @@
     .filter-btn:first-child {
       margin-right: 32px;
       margin-left: 0;
+    }
+
+    .filter-helper {
+      font-size: var(--font-12);
+      font-weight: 400;
+      letter-spacing: var(--font-12-letter-spacing);
+      color: var(--primary-dark-200);
+      margin-top: -28px;
+      margin-left: 100px;
+    }
+
+    .filter-helper span {
+      text-transform: uppercase;
+      background-color: var(--primary-light-300);
+      padding: 4px 8px;
+      color: var(--primary-dark-200);
+      font-weight: 500;
+      border-radius: var(--border-radius-small);
+      font-size: var(--font-8);
+      letter-spacing: var(--font-8-letter-spacing);
     }
 
     .video-grid {
@@ -385,6 +412,7 @@
     </div>
 
     <div class="filter-container" id="filterContainer"></div>
+    <div class="filter-helper"><span>SHIFT</span> + <span>CLICK</span> to select multiple</div>
 
     <div class="video-grid" id="videoGallery"></div>
 
