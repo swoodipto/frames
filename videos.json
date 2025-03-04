@@ -47,6 +47,54 @@
             "company": "Slack",
             "category": ["2D", "UI"],
             "length": "2m 48s"
+        },
+        {
+            "number": 7,
+            "id": "_qCBg_Wsr8M",
+            "title": "Welcome to the Age of No-code",
+            "company": "Webflow",
+            "category": ["Story", "2D", "Faux 3D"],
+            "length": "1m 29s"
+        },
+        {
+            "number": 8,
+            "id": "sIfP9h-H23s",
+            "title": "Introducing Spline",
+            "company": "Spline",
+            "category": ["Story", "2D", "3D"],
+            "length": "1m 25s"
+        },
+        {
+            "number": 9,
+            "id": "VQ2scsSPZN4",
+            "title": "Google Bard",
+            "company": "Greyable",
+            "category": ["Typography", "2D", "UI"],
+            "length": "35s"
+        },
+        {
+            "number": 10,
+            "id": "jX4dLxiso6A",
+            "title": "Doks.AI by Zelios",
+            "company": "Doks.AI",
+            "category": ["2D", "Faux 3D", "UI"],
+            "length": "20s"
+        },
+        {
+            "number": 11,
+            "id": "9K6U_mD3Ock",
+            "title": "Adobe Creative Cloud",
+            "company": "허투루",
+            "category": ["2D", "Faux 3D", "UI"],
+            "length": "31s"
+        },
+        {
+            "number": 12,
+            "id": "4SCjXcBeW1E",
+            "title": "Introducing Google Vids",
+            "company": "Google",
+            "category": ["Typography", "2D", "UI"],
+            "length": "1m 26s"
         }
     ]
 }
