@@ -449,6 +449,26 @@
       color: white;
     }
 
+    .load-more-btn {
+      display: block;
+      margin: 40px auto;
+      padding: 12px 24px;
+      background-color: var(--primary-light-300);
+      border: none;
+      border-radius: var(--border-radius-round);
+      cursor: pointer;
+      font-size: var(--font-16);
+      font-weight: var(--font-16-weight);
+      line-height: var(--font-16-line-height);
+      letter-spacing: var(--font-16-letter-spacing);
+      color: var(--primary-dark-200);
+      transition: background-color 0.3s;
+    }
+
+    .load-more-btn:hover {
+      background-color: var(--primary-light-400);
+    }
+
   </style>
 
 </head>
@@ -577,9 +597,62 @@
             "company": "Slack",
             "category": ["2D", "UI"],
             "length": "2m 48s"
+        },
+        {
+            "number": 7,
+            "id": "_qCBg_Wsr8M",
+            "title": "Welcome to the Age of No-code",
+            "company": "Webflow",
+            "category": ["Story", "2D", "Faux 3D"],
+            "length": "1m 29s"
+        },
+        {
+            "number": 8,
+            "id": "sIfP9h-H23s",
+            "title": "Introducing Spline",
+            "company": "Spline",
+            "category": ["Story", "2D", "3D"],
+            "length": "1m 25s"
+        },
+        {
+            "number": 9,
+            "id": "VQ2scsSPZN4",
+            "title": "Google Bard",
+            "company": "Greyable",
+            "category": ["Typography", "2D", "UI"],
+            "length": "35s"
+        },
+        {
+            "number": 10,
+            "id": "jX4dLxiso6A",
+            "title": "Doks.AI by Zelios",
+            "company": "Doks.AI",
+            "category": ["2D", "Faux 3D", "UI"],
+            "length": "20s"
+        },
+        {
+            "number": 11,
+            "id": "9K6U_mD3Ock",
+            "title": "Adobe Creative Cloud",
+            "company": "허투루",
+            "category": ["2D", "Faux 3D", "UI"],
+            "length": "31s"
+        },
+        {
+            "number": 12,
+            "id": "4SCjXcBeW1E",
+            "title": "Introducing Google Vids",
+            "company": "Google",
+            "category": ["Typography", "2D", "UI"],
+            "length": "1m 26s"
         }
     ]
 };
+
+    // Add these variables at the top of your script
+    let currentPage = 1;
+    const videosPerPage = 6;
+    let hasMoreVideos = true;
 
     // Function to load and display videos
     async function loadVideos() {
@@ -667,6 +740,10 @@
       const buttons = document.querySelectorAll('.filter-btn');
       const allButton = document.querySelector('[data-category="all"]');
       
+      // Reset pagination when filters change
+      currentPage = 1;
+      hasMoreVideos = true;
+      
       // If "All" is clicked, deactivate all other buttons
       if (category === 'all') {
         buttons.forEach(btn => btn.classList.remove('active'));
@@ -700,7 +777,7 @@
         ? videos.filter(video => activeCategories.every(cat => video.category.includes(cat)))
         : videos;
 
-      displayVideos(filteredVideos);
+      displayVideos(filteredVideos, false);
     }
 
     let currentVideoIndex = 0;
@@ -905,20 +982,33 @@
       }
     }
     // Function to display videos
-    function displayVideos(videos) {
+    function displayVideos(videos, loadMore = false) {
       const videoGallery = document.getElementById('videoGallery');
-      videoGallery.innerHTML = ''; // Clear existing videos
       
-      // Sort videos in descending order by number
-      const sortedVideos = [...videos].sort((a, b) => b.number - a.number);
+      // Clear gallery if not loading more
+      if (!loadMore) {
+        videoGallery.innerHTML = '';
+      }
       
-      sortedVideos.forEach(video => {
+      // Get the slice of videos to display
+      const startIndex = (currentPage - 1) * videosPerPage;
+      const endIndex = startIndex + videosPerPage;
+      const videosToShow = videos.slice(startIndex, endIndex);
+      
+      // Display the videos
+      videosToShow.forEach(video => {
         const videoWrapper = createVideoElement(video);
         videoWrapper.onclick = () => {
           openModal(video.id);
         };
         videoGallery.appendChild(videoWrapper);
       });
+      
+      // Check if there are more videos
+      hasMoreVideos = endIndex < videos.length;
+      
+      // Add or update "Load More" button
+      updateLoadMoreButton(videos);
     }
     // Close modal when clicking outside the video or on close button
     document.getElementById('videoModal').addEventListener('click', (e) => {
@@ -935,6 +1025,27 @@
     function formatProjectNumber(number) {
         // Convert to string and pad with leading zeros if less than 3 digits
         return `[${number.toString().padStart(3, '0')}]`;
+    }
+
+    // Add new function to create and handle "Load More" button
+    function updateLoadMoreButton(videos) {
+      // Remove existing button if it exists
+      const existingButton = document.querySelector('.load-more-btn');
+      if (existingButton) {
+        existingButton.remove();
+      }
+      
+      // Add new button if there are more videos
+      if (hasMoreVideos) {
+        const loadMoreBtn = document.createElement('button');
+        loadMoreBtn.className = 'load-more-btn';
+        loadMoreBtn.textContent = 'Load More';
+        loadMoreBtn.onclick = () => {
+          currentPage++;
+          displayVideos(videos, true);
+        };
+        document.getElementById('videoGallery').after(loadMoreBtn);
+      }
     }
   </script>
 
