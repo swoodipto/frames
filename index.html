@@ -712,21 +712,21 @@
       
       // Get active filters
       const activeFilters = Array.from(document.querySelectorAll('.filter-btn.active'))
-        .map(btn => btn.getAttribute('data-category'));
+        .map(btn => btn.getAttribute('data-category'))
+        .filter(cat => cat !== 'all'); // Exclude 'all' from filters
       
-      // Get all videos from the main grid
-      const allVideos = Array.from(document.querySelectorAll('.video-wrapper'));
+      // Get current video data
+      const currentVideo = videoData.videos.find(v => v.id === currentVideoId);
       
       // Filter videos based on active filters and current video
-      let suggestedVideos = allVideos
-        .filter(wrapper => !wrapper.querySelector('iframe').src.includes(currentVideoId));
+      let suggestedVideos = videoData.videos
+        .filter(video => video.id !== currentVideoId);
         
       // Apply category filters if active
       if (activeFilters.length > 0) {
-        suggestedVideos = suggestedVideos.filter(wrapper => {
-          const categories = wrapper.querySelector('.video-company').textContent.split('•').map(cat => cat.trim());
-          return activeFilters.every(filter => categories.includes(filter));
-        });
+        suggestedVideos = suggestedVideos.filter(video => 
+          activeFilters.every(filter => video.category.includes(filter))
+        );
       }
       
       // Shuffle and limit to 6 videos
@@ -735,24 +735,70 @@
         .slice(0, 6);
       
       // Create suggested video elements
-      suggestedVideos.forEach(originalVideo => {
-        const videoWrapper = originalVideo.cloneNode(true);
+      suggestedVideos.forEach(video => {
+        const videoWrapper = createVideoElement(video);
         // Hide the number in suggested videos
         const numberSpan = videoWrapper.querySelector('.video-number');
         if (numberSpan) {
           numberSpan.style.display = 'none';
         }
         videoWrapper.onclick = () => {
-          const videoId = videoWrapper.querySelector('iframe').src.split('?')[0].split('/').pop();
-          // Update URL preserving filter parameters
-          const urlParams = new URLSearchParams(window.location.search);
-          urlParams.set('frame', videoId);
-          window.history.replaceState({}, '', `?${urlParams.toString()}`);
-          openModal(videoId);
+          openModal(video.id);
           window.scrollTo(0, 0);
         };
         suggestedVideosContainer.appendChild(videoWrapper);
       });
+    }
+    // Helper function to create video element (reuse code from displayVideos)
+    function createVideoElement(video) {
+      const videoWrapper = document.createElement('div');
+      videoWrapper.className = 'video-wrapper';
+      
+      const videoContainer = document.createElement('div');
+      videoContainer.className = 'video-container';
+      
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${video.id}?mute=1&controls=0&rel=0&autoplay=1&loop=1&playlist=${video.id}&showinfo=0&cc_load_policy=0&modestbranding=1&vq=small`;
+      iframe.title = "YouTube video player";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.loading = "lazy";
+      
+      const videoInfo = document.createElement('div');
+      videoInfo.className = 'video-info';
+      
+      const titleContainer = document.createElement('div');
+      titleContainer.className = 'video-title-container';
+      
+      const numberSpan = document.createElement('span');
+      numberSpan.className = 'video-number';
+      numberSpan.textContent = `${video.number}.`;
+      
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'video-title';
+      titleSpan.textContent = video.title;
+      
+      const lengthContainer = document.createElement('div');
+      lengthContainer.className = 'video-length-container';
+      
+      const lengthSpan = document.createElement('span');
+      lengthSpan.className = 'video-length';
+      lengthSpan.textContent = video.length;
+      
+      const companySpan = document.createElement('span');
+      companySpan.className = 'video-company';
+      companySpan.textContent = `${video.company} • ${video.category.join(' • ')}`;
+      
+      videoContainer.appendChild(iframe);
+      titleContainer.appendChild(numberSpan);
+      titleContainer.appendChild(titleSpan);
+      lengthContainer.appendChild(lengthSpan);
+      videoInfo.appendChild(titleContainer);
+      videoInfo.appendChild(lengthContainer);
+      videoInfo.appendChild(companySpan);
+      videoWrapper.appendChild(videoContainer);
+      videoWrapper.appendChild(videoInfo);
+      
+      return videoWrapper;
     }
     // Handle keyboard navigation
     function handleKeyPress(event) {
