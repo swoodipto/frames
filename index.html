@@ -13,39 +13,208 @@
   <title>Frames</title>
 
   <style>
+    :root {
+      /* Typography*/
+      --system-font: ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+      --base-typograhy: normal normal 300 32px/1.2em var(--system-font);
+      --brand-casing: lowercase;
+      --no-brand-casing: none;
+      --brand-letter-spacing: -0.02em;
+
+      --font-20: .6rem;
+      --font-20-weight: 300;
+      --font-20-letter-spacing: -0.01em;
+      --font-20-line-height: 1.2em;
+
+      --font-16: .5rem;
+      --font-16-weight: 400;
+      --font-16-letter-spacing: -0.01em;
+      --font-16-line-height: 1.2em;
+
+      --font-14: .4rem;
+      --font-14-weight: 500;
+      --font-14-letter-spacing: -0.01em;
+      --font-14-line-height: 1em;
+      
+      --font-12: .4rem;
+      --font-12-weight: 500;
+      --font-12-letter-spacing: -0.01em;
+      --font-12-line-height: 1em;
+
+      --font-8: .25rem;
+      --font-8-weight: 500;
+      --font-8-letter-spacing: 0.15em;
+      --font-8-line-height: 1em;
+
+      /* Colors */
+      --primary-light: #ffffff;
+      --primary-dark: #000000;
+      --accent: #0000FF;
+
+      /* Shades */
+      --primary-light-100: #FAFAFA;
+      --primary-light-200: #F2F2F2;
+      --primary-light-300: #ECECEC;
+      --primary-light-400: #E5E5E5;
+
+      --primary-dark-100: #CCCCCC;
+      --primary-dark-200: #999999;
+      --primary-dark-300: #666666;
+      --primary-dark-400: #333333;
+
+      --accent-100: #D3D3FF;
+      --accent-200: #A6A6FF;
+      --accent-300: #7A7AFF;
+      --accent-400: #4D4DFF;
+
+      /* Color System */
+      --body-bgcolor: var(--primary-light-100);
+
+      --primary-light-fg: var(--primary-dark);
+      --primary-dark-fg: var(--primary-light);
+      --accent-fg: var(--primary-light);
+
+      /* UI */
+      --border-radius: 8px;
+      --border-radius-small: 4px;
+      --border-radius-round: 1000px;
+
+      /* Layout */
+      --container-width: 1400px;
+      --container-gap: 32px;
+      --container-padding: 12px;
+    }
+
+    html {
+      font: var(--base-typograhy);
+      text-transform: var(--brand-casing);
+      letter-spacing: var(--brand-letter-spacing);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      background-color: var(--body-bgcolor);
+    }
+
+    .container {
+      max-width: var(--container-width);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--container-gap);
+      padding: var(--container-padding);
+    }
+
+    #header {
+      display: flex;
+      justify-content: space-between;
+      align-items: top;
+    }
+
+    .headline {
+      font-size: 1rem;
+    }
+
+    .headline span {
+      display: block;
+      color: var(--primary-dark-100);
+    }
+
     .filter-container {
-      padding: 20px;
-      text-align: center;
-      margin-bottom: 20px;
+      padding: 0;
+      text-align: left;
+      margin-bottom: 0;
     }
 
     .filter-btn {
-      padding: 8px 16px;
-      margin: 0 5px;
+      padding: 8px 20px;
+      margin: 0 6px;
       border: none;
-      border-radius: 20px;
-      background-color: #f0f0f0;
+      border-radius: var(--border-radius-round);
+      background-color: var(--primary-light-300);
       cursor: pointer;
       transition: background-color 0.3s;
       margin-bottom: 8px;
+      font-size: var(--font-20);
+      font-weight: var(--font-20-weight);
+      line-height: var(--font-20-line-height);
+      letter-spacing: var(--font-20-letter-spacing);
+      color: var(--primary-dark-200);
     }
 
     .filter-btn.active {
-      background-color: #ff0000;
-      color: white;
+      background-color: var(--accent);
+      color: var(--primary-light);
+    }
+
+    .filter-btn:first-child {
+      margin-right: 32px;
+      margin-left: 0;
+    }
+
+    .filter-helper {
+      font-size: var(--font-12);
+      font-weight: var(--font-12-weight);
+      line-height: var(--font-12-line-height);
+      letter-spacing: var(--font-12-letter-spacing);
+      color: var(--primary-dark-200);
+      margin-top: -28px;
+      margin-left: 100px;
+    }
+
+    .filter-helper span {
+      text-transform: uppercase;
+      background-color: var(--primary-light-300);
+      padding: 4px 8px;
+      color: var(--primary-dark-200);
+      border-radius: var(--border-radius-small);
+      font-size: var(--font-8);
+      font-weight: var(--font-8-weight);
+      line-height: var(--font-8-line-height);
+      letter-spacing: var(--font-8-letter-spacing);
     }
 
     .video-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      padding: 20px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background-color: var(--primary-light-400); /* Border color */
+      padding: 1px; /* Outer border */
     }
 
     .video-wrapper {
+      position: relative;
       display: flex;
       flex-direction: column;
       cursor: pointer;
+      gap: 8px;
+      padding: 20px 24px;
+      background-color: var(--body-bgcolor);
+    }
+
+    .video-wrapper:after {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      bottom: -1px;
+      background-color: var(--primary-light-400); /* Border color */
+      z-index: -1;
+    }
+
+    /* Remove right border from last column */
+    .video-wrapper:nth-child(3n)::after {
+      border-right: none;
+    }
+
+    /* Remove bottom border from last row */
+    .video-wrapper:nth-last-child(-n+3)::after {
+      border-bottom: none;
     }
 
     .video-container {
@@ -54,7 +223,7 @@
       padding-bottom: 56.25%;
       /* 16:9 Aspect Ratio */
       background-color: #000;
-      border-radius: 12px;
+      border-radius: var(--border-radius);
       overflow: hidden;
     }
 
@@ -70,40 +239,55 @@
     }
 
     .video-info {
-      padding: 10px 0;
+      padding: 0;
+    }
+
+    .video-info-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: var(--font-14);
+      font-weight: var(--font-14-weight);
+      line-height: var(--font-14-line-height);
+      letter-spacing: var(--font-14-letter-spacing);
+    }
+
+    .video-info-bottom {
+      display: flex;
+      justify-content: space-between;
     }
 
     .video-number {
-      display: inline;
-      font-size: 1.1em;
-      font-weight: bold;
+      display: flex;
       color: #ff0000;
-      margin-right: 8px;
       white-space: nowrap;
     }
 
-    .video-title {
-      display: inline;
-      font-size: 1.1em;
-      font-weight: bold;
-      margin-bottom: 4px;
-      word-wrap: break-word;
+    .video-company {
+      display: flex;
+      color: var(--primary-dark-200);
+      text-transform: var(--no-brand-casing);
     }
 
     .video-title-container {
-      display: block;
-      margin-bottom: 4px;
+      display: flex;
+      max-width: 80%;
+    }
+
+    .video-title {
+      font-size: var(--font-16);
+      font-weight: var(--font-16-weight);
+      line-height: var(--font-16-line-height);
+      letter-spacing: var(--font-16-letter-spacing);
+      text-transform: var(--no-brand-casing);
+      color: var(--primary-light-fg);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .video-length-container {
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .video-company {
-      display: block;
-      color: #666;
-      font-size: 0.9em;
+      display: flex;
     }
 
     .video-id {
@@ -114,13 +298,15 @@
     }
 
     .video-length {
-      display: inline-block;
-      color: #666;
-      font-size: 0.9em;
+      color: var(--primary-dark-200);
+      font-size: var(--font-14);
+      font-weight: var(--font-14-weight);
+      line-height: var(--font-14-line-height);
+      letter-spacing: var(--font-14-letter-spacing);
       margin-left: 0;
-      padding: 2px 6px;
-      background-color: rgba(0, 0, 0, 0.05);
-      border-radius: 4px;
+      padding: 4px 8px;
+      background-color: var(--primary-light-300);
+      border-radius: var(--border-radius-small);
     }
 
     /* Modal styles */
@@ -262,57 +448,77 @@
     .suggested-videos-grid .video-title {
       color: white;
     }
+
   </style>
 
 </head>
 
 <body>
 
-  <div class="filter-container" id="filterContainer"></div>
+  <div class="container">
 
-  <div class="video-grid" id="videoGallery"></div>
+    <div id="header">
+      <div class="headline">
+        Curated catalog of sublime motion works
+        <span>where every frame is a wallpaper.</span>
+      </div>
 
-  <!-- Modal -->
+      <div class="logo">
+        <svg width="101" height="28" viewBox="0 0 101 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0.332663 0.18289H10.9567V3.63889H4.14066V20.6309H0.332663V0.18289Z" fill="#0000FF"/>
+          <path d="M9.83391 27.4469V13.0406H7.34954V10.8531H9.83391V9.08752C9.83391 7.97293 9.93287 7.14481 10.1308 6.60314C10.4016 5.87398 10.8756 5.28543 11.5527 4.83752C12.2402 4.37918 13.1985 4.15002 14.4277 4.15002C15.2193 4.15002 16.0943 4.24377 17.0527 4.43127L16.6308 6.88439C16.0475 6.78023 15.4954 6.72814 14.9745 6.72814C14.1204 6.72814 13.5162 6.91043 13.162 7.27502C12.8079 7.6396 12.6308 8.32189 12.6308 9.32189V10.8531H15.8652V13.0406H12.6308V27.4469H9.83391ZM17.397 27.4469V10.8531H19.9283V13.3688C20.5741 12.1917 21.1679 11.4156 21.7095 11.0406C22.2616 10.6656 22.8658 10.4781 23.522 10.4781C24.47 10.4781 25.4335 10.7802 26.4127 11.3844L25.4439 13.9938C24.7564 13.5875 24.0689 13.3844 23.3814 13.3844C22.7668 13.3844 22.2147 13.5719 21.7252 13.9469C21.2356 14.3115 20.8866 14.8219 20.6783 15.4781C20.3658 16.4781 20.2095 17.5719 20.2095 18.7594V27.4469H17.397ZM38.2727 25.4C37.231 26.2854 36.2258 26.9104 35.257 27.275C34.2987 27.6396 33.2675 27.8219 32.1633 27.8219C30.3404 27.8219 28.9393 27.3792 27.9602 26.4938C26.981 25.5979 26.4914 24.4573 26.4914 23.0719C26.4914 22.2594 26.6737 21.5198 27.0383 20.8531C27.4133 20.1761 27.8977 19.6344 28.4914 19.2281C29.0956 18.8219 29.7727 18.5146 30.5227 18.3063C31.0747 18.1604 31.9081 18.0198 33.0227 17.8844C35.2935 17.6136 36.9654 17.2906 38.0383 16.9156C38.0487 16.5302 38.0539 16.2854 38.0539 16.1813C38.0539 15.0354 37.7883 14.2281 37.257 13.7594C36.5383 13.124 35.4706 12.8063 34.0539 12.8063C32.731 12.8063 31.7518 13.0406 31.1164 13.5094C30.4914 13.9677 30.0279 14.7854 29.7258 15.9625L26.9758 15.5875C27.2258 14.4104 27.6372 13.4625 28.2102 12.7438C28.7831 12.0146 29.6112 11.4573 30.6945 11.0719C31.7779 10.6761 33.0331 10.4781 34.4602 10.4781C35.8768 10.4781 37.0279 10.6448 37.9133 10.9781C38.7987 11.3115 39.4497 11.7334 39.8664 12.2438C40.2831 12.7438 40.5747 13.3792 40.7414 14.15C40.8352 14.6292 40.882 15.4938 40.882 16.7438V20.4938C40.882 23.1084 40.9393 24.7646 41.0539 25.4625C41.1789 26.15 41.4185 26.8115 41.7727 27.4469H38.8352C38.5435 26.8636 38.356 26.1813 38.2727 25.4ZM38.0383 19.1188C37.0175 19.5354 35.4862 19.8896 33.4445 20.1813C32.2883 20.3479 31.4706 20.5354 30.9914 20.7438C30.5122 20.9521 30.1425 21.2594 29.882 21.6656C29.6216 22.0615 29.4914 22.5042 29.4914 22.9938C29.4914 23.7438 29.7727 24.3688 30.3352 24.8688C30.9081 25.3688 31.7414 25.6188 32.8352 25.6188C33.9185 25.6188 34.882 25.3844 35.7258 24.9156C36.5695 24.4365 37.1893 23.7854 37.5852 22.9625C37.8872 22.3271 38.0383 21.3896 38.0383 20.15V19.1188ZM44.617 27.4469V10.8531H47.1327V13.1813C47.6535 12.3688 48.3462 11.7177 49.2108 11.2281C50.0754 10.7281 51.0597 10.4781 52.1639 10.4781C53.3931 10.4781 54.3983 10.7334 55.1795 11.2438C55.9712 11.7542 56.5285 12.4677 56.8514 13.3844C58.1639 11.4469 59.8722 10.4781 61.9764 10.4781C63.6222 10.4781 64.8879 10.9365 65.7733 11.8531C66.6587 12.7594 67.1014 14.1604 67.1014 16.0563V27.4469H64.3045V16.9938C64.3045 15.8688 64.2108 15.0615 64.0233 14.5719C63.8462 14.0719 63.5181 13.6709 63.0389 13.3688C62.5597 13.0667 61.9972 12.9156 61.3514 12.9156C60.1847 12.9156 59.216 13.3063 58.4452 14.0875C57.6743 14.8584 57.2889 16.0979 57.2889 17.8063V27.4469H54.4764V16.6656C54.4764 15.4156 54.2472 14.4781 53.7889 13.8531C53.3306 13.2281 52.5806 12.9156 51.5389 12.9156C50.7472 12.9156 50.0129 13.124 49.3358 13.5406C48.6691 13.9573 48.1847 14.5667 47.8827 15.3688C47.5806 16.1709 47.4295 17.3271 47.4295 18.8375V27.4469H44.617ZM81.9927 22.1031L84.8989 22.4625C84.4406 24.1604 83.5916 25.4781 82.352 26.4156C81.1125 27.3531 79.5291 27.8219 77.602 27.8219C75.175 27.8219 73.2479 27.0771 71.8208 25.5875C70.4041 24.0875 69.6958 21.9886 69.6958 19.2906C69.6958 16.499 70.4145 14.3323 71.852 12.7906C73.2895 11.249 75.1541 10.4781 77.4458 10.4781C79.6645 10.4781 81.477 11.2334 82.8833 12.7438C84.2895 14.2542 84.9927 16.3792 84.9927 19.1188C84.9927 19.2854 84.9875 19.5354 84.977 19.8688H72.602C72.7062 21.6917 73.2218 23.0875 74.1489 24.0563C75.076 25.025 76.2322 25.5094 77.6177 25.5094C78.6489 25.5094 79.5291 25.2386 80.2583 24.6969C80.9875 24.1552 81.5656 23.2906 81.9927 22.1031ZM72.7583 17.5563H82.0239C81.8989 16.1604 81.5447 15.1136 80.9614 14.4156C80.0656 13.3323 78.9041 12.7906 77.477 12.7906C76.1854 12.7906 75.0968 13.2229 74.2114 14.0875C73.3364 14.9521 72.852 16.1084 72.7583 17.5563ZM86.6808 22.4938L89.462 22.0563C89.6183 23.1709 90.0506 24.025 90.7589 24.6188C91.4777 25.2125 92.4777 25.5094 93.7589 25.5094C95.0506 25.5094 96.0089 25.249 96.6339 24.7281C97.2589 24.1969 97.5714 23.5771 97.5714 22.8688C97.5714 22.2334 97.2954 21.7334 96.7433 21.3688C96.3579 21.1188 95.3995 20.8011 93.8683 20.4156C91.8058 19.8948 90.3735 19.4469 89.5714 19.0719C88.7797 18.6865 88.1756 18.1604 87.7589 17.4938C87.3527 16.8167 87.1495 16.0719 87.1495 15.2594C87.1495 14.5198 87.3162 13.8375 87.6495 13.2125C87.9933 12.5771 88.4568 12.0511 89.0402 11.6344C89.4777 11.3115 90.0714 11.0406 90.8214 10.8219C91.5818 10.5927 92.3943 10.4781 93.2589 10.4781C94.561 10.4781 95.7016 10.6656 96.6808 11.0406C97.6704 11.4156 98.3995 11.9261 98.8683 12.5719C99.337 13.2073 99.66 14.0615 99.837 15.1344L97.087 15.5094C96.962 14.6552 96.5975 13.9886 95.9933 13.5094C95.3995 13.0302 94.5558 12.7906 93.462 12.7906C92.1704 12.7906 91.2485 13.0042 90.6964 13.4313C90.1443 13.8584 89.8683 14.3584 89.8683 14.9313C89.8683 15.2959 89.9829 15.624 90.212 15.9156C90.4412 16.2177 90.8006 16.4677 91.2902 16.6656C91.5714 16.7698 92.3995 17.0094 93.7745 17.3844C95.7641 17.9156 97.1495 18.3531 97.9308 18.6969C98.7225 19.0302 99.3422 19.5198 99.7902 20.1656C100.238 20.8115 100.462 21.6136 100.462 22.5719C100.462 23.5094 100.186 24.3948 99.6339 25.2281C99.0922 26.0511 98.3058 26.6917 97.2745 27.15C96.2433 27.5979 95.0766 27.8219 93.7745 27.8219C91.6183 27.8219 89.9725 27.374 88.837 26.4781C87.712 25.5823 86.9933 24.2542 86.6808 22.4938Z" fill="#CCCCCC"/>
+          </svg>      
+      </div>
+    </div>
 
-  <div class="modal-overlay" id="videoModal">
+    <div class="filter-container" id="filterContainer"></div>
+    <div class="filter-helper"><span>SHIFT</span> + <span>CLICK</span> to select multiple</div>
 
-    <div class="modal-container">
+    <div class="video-grid" id="videoGallery"></div>
 
-      <button class="modal-close">×</button>
+    <!-- Modal -->
 
-      <div class="modal-video-section">
+    <div class="modal-overlay" id="videoModal">
 
-        <div class="modal-video-info">
+      <div class="modal-container">
 
-          <div class="modal-video-left">
+        <button class="modal-close">×</button>
 
-            <span class="modal-video-number"></span>
+        <div class="modal-video-section">
 
-            <span class="modal-video-title"></span>
+          <div class="modal-video-info">
+
+            <div class="modal-video-left">
+
+              <span class="modal-video-number"></span>
+
+              <span class="modal-video-title"></span>
+
+            </div>
+
+            <span class="modal-video-company"></span>
 
           </div>
 
-          <span class="modal-video-company"></span>
+          <div class="modal-video-player">
+
+            <button class="modal-nav-btn" id="prevButton" onclick="navigateVideo(-1)">←</button>
+
+            <div class="modal-video-container" id="modalVideoContainer"></div>
+
+            <button class="modal-nav-btn" id="nextButton" onclick="navigateVideo(1)">→</button>
+
+          </div>
 
         </div>
 
-        <div class="modal-video-player">
+        <div class="suggested-videos-section">
 
-          <button class="modal-nav-btn" id="prevButton" onclick="navigateVideo(-1)">←</button>
+          <h2 class="suggested-videos-title">Suggested Videos</h2>
 
-          <div class="modal-video-container" id="modalVideoContainer"></div>
-
-          <button class="modal-nav-btn" id="nextButton" onclick="navigateVideo(1)">→</button>
+          <div class="suggested-videos-grid" id="suggestedVideos"></div>
 
         </div>
-
-      </div>
-
-      <div class="suggested-videos-section">
-
-        <h2 class="suggested-videos-title">Suggested Videos</h2>
-
-        <div class="suggested-videos-grid" id="suggestedVideos"></div>
 
       </div>
 
@@ -321,38 +527,31 @@
   </div>
 
   <script>
+    let videoData = null;
+
     // Function to load and display videos
     async function loadVideos() {
       try {
-        // Fetch video data from videos.json
+        // Fetch the JSON file
         const response = await fetch('videos.json');
         if (!response.ok) {
-          throw new Error('Failed to fetch video data');
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
-        
+        videoData = await response.json();
+
         // Get unique categories (excluding 'All')
-        const categories = [...new Set(data.videos.flatMap(video => video.category))];
+        const categories = [...new Set(videoData.videos.flatMap(video => video.category))];
         
         // Create filter buttons
         const filterContainer = document.getElementById('filterContainer');
         
-        // Create clear filters button (initially hidden)
-        const clearButton = document.createElement('button');
-        clearButton.className = 'filter-btn clear-filters';
-        clearButton.textContent = 'Clear filters';
-        clearButton.style.display = 'none';
-        clearButton.addEventListener('click', () => {
-          // Remove active class from all category buttons
-          document.querySelectorAll('.filter-btn:not(.clear-filters)').forEach(btn => btn.classList.remove('active'));
-          // Hide clear button
-          clearButton.style.display = 'none';
-          // Display all videos
-          displayVideos(data.videos);
-          // Update URL to remove filter parameters
-          updateUrlFilters([]);
-        });
-        filterContainer.appendChild(clearButton);
+        // Create "All" button
+        const allButton = document.createElement('button');
+        allButton.className = 'filter-btn active';
+        allButton.textContent = 'All';
+        allButton.setAttribute('data-category', 'all');
+        allButton.addEventListener('click', (event) => filterVideos('all', videoData.videos, event));
+        filterContainer.appendChild(allButton);
         
         // Create category filter buttons
         categories.forEach(category => {
@@ -360,7 +559,7 @@
           button.className = 'filter-btn';
           button.textContent = category;
           button.setAttribute('data-category', category);
-          button.addEventListener('click', (event) => filterVideos(category, data.videos, event));
+          button.addEventListener('click', (event) => filterVideos(category, videoData.videos, event));
           filterContainer.appendChild(button);
         });
         
@@ -372,18 +571,18 @@
             const button = document.querySelector(`.filter-btn[data-category="${category}"]`);
             if (button) {
               button.classList.add('active');
-              clearButton.style.display = 'inline-block';
+              allButton.classList.remove('active');
             }
           });
           
           // Filter videos based on URL parameters
-          const filteredVideos = data.videos.filter(video => 
+          const filteredVideos = videoData.videos.filter(video => 
             urlFilters.every(cat => video.category.includes(cat))
           );
           displayVideos(filteredVideos);
         } else {
           // Initial load of all videos if no filters in URL
-          displayVideos(data.videos);
+          displayVideos(videoData.videos);
         }
 
         // Check URL for video ID after videos are loaded
@@ -420,25 +619,33 @@
 
     // Function to filter videos
     function filterVideos(category, videos, event) {
-      const buttons = document.querySelectorAll('.filter-btn:not(.clear-filters)');
-      const clearButton = document.querySelector('.clear-filters');
+      const buttons = document.querySelectorAll('.filter-btn');
+      const allButton = document.querySelector('[data-category="all"]');
+      
+      // If "All" is clicked, deactivate all other buttons
+      if (category === 'all') {
+        buttons.forEach(btn => btn.classList.remove('active'));
+        allButton.classList.add('active');
+        displayVideos(videos);
+        updateUrlFilters([]);
+        return;
+      }
       
       // If shift is not held, deactivate all buttons except the clicked one
       if (!event.shiftKey) {
         buttons.forEach(btn => btn.classList.remove('active'));
         event.target.classList.add('active');
+        allButton.classList.remove('active');
       } else {
         // Toggle the clicked button
         event.target.classList.toggle('active');
+        allButton.classList.remove('active');
       }
 
       // Get all active categories
       const activeCategories = Array.from(buttons)
         .filter(btn => btn.classList.contains('active'))
         .map(btn => btn.getAttribute('data-category'));
-
-      // Show/hide clear button based on active filters
-      clearButton.style.display = activeCategories.length > 0 ? 'inline-block' : 'none';
 
       // Update URL with current filters
       updateUrlFilters(activeCategories);
@@ -523,7 +730,7 @@
       const currentVideo = currentVideos[currentVideoIndex];
       const videoId = currentVideo.querySelector('iframe').src.split('?')[0].split('/').pop();
       // Update video metadata
-      const number = currentVideo.querySelector('.video-number').textContent;
+      const number = formatProjectNumber(currentVideo.querySelector('.video-number').textContent.replace(/[\[\]]/g, ''));
       const title = currentVideo.querySelector('.video-title').textContent;
       const companyAndCategory = currentVideo.querySelector('.video-company').textContent;
       document.querySelector('.modal-video-number').textContent = number;
@@ -548,21 +755,18 @@
       
       // Get active filters
       const activeFilters = Array.from(document.querySelectorAll('.filter-btn.active'))
-        .map(btn => btn.getAttribute('data-category'));
-      
-      // Get all videos from the main grid
-      const allVideos = Array.from(document.querySelectorAll('.video-wrapper'));
+        .map(btn => btn.getAttribute('data-category'))
+        .filter(cat => cat !== 'all'); // Exclude 'all' from filters
       
       // Filter videos based on active filters and current video
-      let suggestedVideos = allVideos
-        .filter(wrapper => !wrapper.querySelector('iframe').src.includes(currentVideoId));
+      let suggestedVideos = videoData.videos
+        .filter(video => video.id !== currentVideoId);
         
       // Apply category filters if active
       if (activeFilters.length > 0) {
-        suggestedVideos = suggestedVideos.filter(wrapper => {
-          const categories = wrapper.querySelector('.video-company').textContent.split('•').map(cat => cat.trim());
-          return activeFilters.every(filter => categories.includes(filter));
-        });
+        suggestedVideos = suggestedVideos.filter(video => 
+          activeFilters.every(filter => video.category.includes(filter))
+        );
       }
       
       // Shuffle and limit to 6 videos
@@ -571,24 +775,75 @@
         .slice(0, 6);
       
       // Create suggested video elements
-      suggestedVideos.forEach(originalVideo => {
-        const videoWrapper = originalVideo.cloneNode(true);
-        // Hide the number in suggested videos
-        const numberSpan = videoWrapper.querySelector('.video-number');
-        if (numberSpan) {
-          numberSpan.style.display = 'none';
-        }
+      suggestedVideos.forEach(video => {
+        const videoWrapper = createVideoElement(video);
         videoWrapper.onclick = () => {
-          const videoId = videoWrapper.querySelector('iframe').src.split('?')[0].split('/').pop();
-          // Update URL preserving filter parameters
-          const urlParams = new URLSearchParams(window.location.search);
-          urlParams.set('frame', videoId);
-          window.history.replaceState({}, '', `?${urlParams.toString()}`);
-          openModal(videoId);
+          openModal(video.id);
           window.scrollTo(0, 0);
         };
         suggestedVideosContainer.appendChild(videoWrapper);
       });
+    }
+    // Helper function to create video element (reuse code from displayVideos)
+    function createVideoElement(video) {
+      const videoWrapper = document.createElement('div');
+      videoWrapper.className = 'video-wrapper';
+      
+      // Create top info section
+      const videoInfoTop = document.createElement('div');
+      videoInfoTop.className = 'video-info-top';
+      
+      const numberSpan = document.createElement('span');
+      numberSpan.className = 'video-number';
+      numberSpan.textContent = formatProjectNumber(video.number);
+      
+      const companySpan = document.createElement('span');
+      companySpan.className = 'video-company';
+      companySpan.textContent = video.company;
+      
+      videoInfoTop.appendChild(numberSpan);
+      videoInfoTop.appendChild(companySpan);
+      
+      // Create video container
+      const videoContainer = document.createElement('div');
+      videoContainer.className = 'video-container';
+      
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${video.id}?mute=1&controls=0&rel=0&autoplay=1&loop=1&playlist=${video.id}&showinfo=0&cc_load_policy=0&modestbranding=1&vq=small`;
+      iframe.title = "YouTube video player";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.loading = "lazy";
+      
+      // Create bottom info section
+      const videoInfoBottom = document.createElement('div');
+      videoInfoBottom.className = 'video-info-bottom';
+      
+      const titleContainer = document.createElement('div');
+      titleContainer.className = 'video-title-container';
+      
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'video-title';
+      titleSpan.textContent = video.title;
+      
+      const lengthContainer = document.createElement('div');
+      lengthContainer.className = 'video-length-container';
+      
+      const lengthSpan = document.createElement('span');
+      lengthSpan.className = 'video-length';
+      lengthSpan.textContent = video.length;
+      
+      // Assemble the elements
+      videoContainer.appendChild(iframe);
+      titleContainer.appendChild(titleSpan);
+      lengthContainer.appendChild(lengthSpan);
+      videoInfoBottom.appendChild(titleContainer);
+      videoInfoBottom.appendChild(lengthContainer);
+      
+      videoWrapper.appendChild(videoInfoTop);
+      videoWrapper.appendChild(videoContainer);
+      videoWrapper.appendChild(videoInfoBottom);
+      
+      return videoWrapper;
     }
     // Handle keyboard navigation
     function handleKeyPress(event) {
@@ -608,48 +863,15 @@
     function displayVideos(videos) {
       const videoGallery = document.getElementById('videoGallery');
       videoGallery.innerHTML = ''; // Clear existing videos
+      
       // Sort videos in descending order by number
       const sortedVideos = [...videos].sort((a, b) => b.number - a.number);
+      
       sortedVideos.forEach(video => {
-        const videoWrapper = document.createElement('div');
-        videoWrapper.className = 'video-wrapper';
+        const videoWrapper = createVideoElement(video);
         videoWrapper.onclick = () => {
           openModal(video.id);
         };
-        const videoContainer = document.createElement('div');
-        videoContainer.className = 'video-container';
-        const iframe = document.createElement('iframe');
-        iframe.src = `https://www.youtube.com/embed/${video.id}?mute=1&controls=0&rel=0&autoplay=1&loop=1&playlist=${video.id}&showinfo=0&cc_load_policy=0&modestbranding=1&vq=small`;
-        iframe.title = "YouTube video player";
-        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-        iframe.loading = "lazy";
-        const videoInfo = document.createElement('div');
-        videoInfo.className = 'video-info';
-        const titleContainer = document.createElement('div');
-        titleContainer.className = 'video-title-container';
-        const numberSpan = document.createElement('span');
-        numberSpan.className = 'video-number';
-        numberSpan.textContent = `${video.number}.`;
-        const titleSpan = document.createElement('span');
-        titleSpan.className = 'video-title';
-        titleSpan.textContent = video.title;
-        const lengthContainer = document.createElement('div');
-        lengthContainer.className = 'video-length-container';
-        const lengthSpan = document.createElement('span');
-        lengthSpan.className = 'video-length';
-        lengthSpan.textContent = video.length;
-        const companySpan = document.createElement('span');
-        companySpan.className = 'video-company';
-        companySpan.textContent = `${video.company} • ${video.category.join(' • ')}`;
-        videoContainer.appendChild(iframe);
-        titleContainer.appendChild(numberSpan);
-        titleContainer.appendChild(titleSpan);
-        lengthContainer.appendChild(lengthSpan);
-        videoInfo.appendChild(titleContainer);
-        videoInfo.appendChild(lengthContainer);
-        videoInfo.appendChild(companySpan);
-        videoWrapper.appendChild(videoContainer);
-        videoWrapper.appendChild(videoInfo);
         videoGallery.appendChild(videoWrapper);
       });
     }
@@ -663,6 +885,12 @@
     document.addEventListener('DOMContentLoaded', () => {
       loadVideos();
     });
+
+    // Add this helper function at the top level
+    function formatProjectNumber(number) {
+        // Convert to string and pad with leading zeros if less than 3 digits
+        return `[${number.toString().padStart(3, '0')}]`;
+    }
   </script>
 
 </body>
