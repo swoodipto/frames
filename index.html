@@ -129,7 +129,8 @@
       color: var(--primary-light);
     }
 
-    .filter-btn:nth-child(2) {
+    .filter-btn:first-child {
+      margin-right: 32px;
       margin-left: 0;
     }
 
@@ -501,22 +502,13 @@
         // Create filter buttons
         const filterContainer = document.getElementById('filterContainer');
         
-        // Create clear filters button (initially hidden)
-        const clearButton = document.createElement('button');
-        clearButton.className = 'filter-btn clear-filters';
-        clearButton.textContent = 'Clear filters';
-        clearButton.style.display = 'none';
-        clearButton.addEventListener('click', () => {
-          // Remove active class from all category buttons
-          document.querySelectorAll('.filter-btn:not(.clear-filters)').forEach(btn => btn.classList.remove('active'));
-          // Hide clear button
-          clearButton.style.display = 'none';
-          // Display all videos
-          displayVideos(videoData.videos);
-          // Update URL to remove filter parameters
-          updateUrlFilters([]);
-        });
-        filterContainer.appendChild(clearButton);
+        // Create "All" button
+        const allButton = document.createElement('button');
+        allButton.className = 'filter-btn active';
+        allButton.textContent = 'All';
+        allButton.setAttribute('data-category', 'all');
+        allButton.addEventListener('click', (event) => filterVideos('all', videoData.videos, event));
+        filterContainer.appendChild(allButton);
         
         // Create category filter buttons
         categories.forEach(category => {
@@ -536,7 +528,7 @@
             const button = document.querySelector(`.filter-btn[data-category="${category}"]`);
             if (button) {
               button.classList.add('active');
-              clearButton.style.display = 'inline-block';
+              allButton.classList.remove('active');
             }
           });
           
@@ -584,25 +576,33 @@
 
     // Function to filter videos
     function filterVideos(category, videos, event) {
-      const buttons = document.querySelectorAll('.filter-btn:not(.clear-filters)');
-      const clearButton = document.querySelector('.clear-filters');
+      const buttons = document.querySelectorAll('.filter-btn');
+      const allButton = document.querySelector('[data-category="all"]');
+      
+      // If "All" is clicked, deactivate all other buttons
+      if (category === 'all') {
+        buttons.forEach(btn => btn.classList.remove('active'));
+        allButton.classList.add('active');
+        displayVideos(videos);
+        updateUrlFilters([]);
+        return;
+      }
       
       // If shift is not held, deactivate all buttons except the clicked one
       if (!event.shiftKey) {
         buttons.forEach(btn => btn.classList.remove('active'));
         event.target.classList.add('active');
+        allButton.classList.remove('active');
       } else {
         // Toggle the clicked button
         event.target.classList.toggle('active');
+        allButton.classList.remove('active');
       }
 
       // Get all active categories
       const activeCategories = Array.from(buttons)
         .filter(btn => btn.classList.contains('active'))
         .map(btn => btn.getAttribute('data-category'));
-
-      // Show/hide clear button based on active filters
-      clearButton.style.display = activeCategories.length > 0 ? 'inline-block' : 'none';
 
       // Update URL with current filters
       updateUrlFilters(activeCategories);
