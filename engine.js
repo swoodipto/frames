@@ -1,104 +1,20 @@
-// Video data
-const videoData = {
-    "videos": [
-        {
-            "number": 1,
-            "id": "1PWJqjd2d6M",
-            "title": "For All Things Worth Saving",
-            "company": "Dropbox",
-            "category": ["Story", "UI"],
-            "length": "49s"
-        },
-        {
-            "number": 2,
-            "id": "bv936eeoxmQ",
-            "title": "Framer Design: Design on an intuitive Canvas",
-            "company": "Framer",
-            "category": ["UI"],
-            "length": "59s"
-        },
-        {
-            "number": 3,
-            "id": "5XxIwPKMlek",
-            "title": "Introducing Wix Studio",
-            "company": "Wix",
-            "category": ["3D", "UI"],
-            "length": "1m 43s"
-        },
-        {
-            "number": 4,
-            "id": "Er04BDbtSIg",
-            "title": "School of Motion: Join the Movement",
-            "company": "School of Motion",
-            "category": ["2D", "Faux 3D", "Story"],
-            "length": "1m 50s"
-        },
-        {
-            "number": 5,
-            "id": "pBy1zgt0XPc",
-            "title": "What is GitHub?",
-            "company": "GitHub",
-            "category": ["Story", "2D", "3D", "Faux 3D"],
-            "length": "2m 43s"
-        },
-        {
-            "number": 6,
-            "id": "EDATYbzYGiE",
-            "title": "What is Slack? Your Work OS",
-            "company": "Slack",
-            "category": ["2D", "UI"],
-            "length": "2m 48s"
-        },
-        {
-            "number": 7,
-            "id": "_qCBg_Wsr8M",
-            "title": "Welcome to the Age of No-code",
-            "company": "Webflow",
-            "category": ["Story", "2D", "Faux 3D"],
-            "length": "1m 29s"
-        },
-        {
-            "number": 8,
-            "id": "sIfP9h-H23s",
-            "title": "Introducing Spline",
-            "company": "Spline",
-            "category": ["Story", "2D", "3D"],
-            "length": "1m 25s"
-        },
-        {
-            "number": 9,
-            "id": "VQ2scsSPZN4",
-            "title": "Google Bard",
-            "company": "Greyable",
-            "category": ["Typography", "UI"],
-            "length": "35s"
-        },
-        {
-            "number": 10,
-            "id": "jX4dLxiso6A",
-            "title": "Doks.AI by Zelios",
-            "company": "Doks.AI",
-            "category": ["Faux 3D", "UI"],
-            "length": "20s"
-        },
-        {
-            "number": 11,
-            "id": "9K6U_mD3Ock",
-            "title": "Adobe Creative Cloud",
-            "company": "허투루",
-            "category": ["2D", "Faux 3D", "UI"],
-            "length": "31s"
-        },
-        {
-            "number": 12,
-            "id": "4SCjXcBeW1E",
-            "title": "Introducing Google Vids",
-            "company": "Google",
-            "category": ["Typography", "UI"],
-            "length": "1m 26s"
+// Replace the videoData constant with a variable
+let videoData = null;
+
+// Add function to fetch video data
+async function fetchVideoData() {
+    try {
+        const response = await fetch('videos.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    ]
-};
+        const data = await response.json();
+        return data.videos;
+    } catch (error) {
+        console.error('Error loading videos:', error);
+        return [];
+    }
+}
 
 // Add these variables at the top of your script
 let currentPage = 1;
@@ -108,56 +24,58 @@ let hasMoreVideos = true;
 // Function to load and display videos
 async function loadVideos() {
     try {
-    // Get unique categories (excluding 'All')
-    const categories = [...new Set(videoData.videos.flatMap(video => video.category))];
-    
-    // Create filter buttons
-    const filterContainer = document.getElementById('filterContainer');
-    
-    // Create "All" button
-    const allButton = document.createElement('button');
-    allButton.className = 'filter-btn active';
-    allButton.textContent = 'All';
-    allButton.setAttribute('data-category', 'all');
-    allButton.addEventListener('click', (event) => filterVideos('all', videoData.videos, event));
-    filterContainer.appendChild(allButton);
-    
-    // Create category filter buttons
-    categories.forEach(category => {
-        const button = document.createElement('button');
-        button.className = 'filter-btn';
-        button.textContent = category;
-        button.setAttribute('data-category', category);
-        button.addEventListener('click', (event) => filterVideos(category, videoData.videos, event));
-        filterContainer.appendChild(button);
-    });
-    
-    // Check for filter parameters in URL and apply them
-    const urlFilters = getUrlFilters();
-    if (urlFilters.length > 0) {
-        // Activate filter buttons based on URL parameters
-        urlFilters.forEach(category => {
-        const button = document.querySelector(`.filter-btn[data-category="${category}"]`);
-        if (button) {
-            button.classList.add('active');
-            allButton.classList.remove('active');
+        if (!videoData) {
+            videoData = await fetchVideoData();
         }
+
+        // Get unique categories (excluding 'All')
+        const categories = [...new Set(videoData.flatMap(video => video.category))];
+        
+        // Create filter buttons
+        const filterContainer = document.getElementById('filterContainer');
+        
+        // Create "All" button
+        const allButton = document.createElement('button');
+        allButton.className = 'filter-btn active';
+        allButton.textContent = 'All';
+        allButton.setAttribute('data-category', 'all');
+        allButton.addEventListener('click', (event) => filterVideos('all', videoData, event));
+        filterContainer.appendChild(allButton);
+        
+        // Create category filter buttons
+        categories.forEach(category => {
+            const button = document.createElement('button');
+            button.className = 'filter-btn';
+            button.textContent = category;
+            button.setAttribute('data-category', category);
+            button.addEventListener('click', (event) => filterVideos(category, videoData, event));
+            filterContainer.appendChild(button);
         });
         
-        // Filter videos based on URL parameters
-        const filteredVideos = videoData.videos.filter(video => 
-        urlFilters.every(cat => video.category.includes(cat))
-        );
-        displayVideos(filteredVideos);
-    } else {
-        // Initial load of all videos if no filters in URL
-        displayVideos(videoData.videos);
-    }
+        // Check for filter parameters in URL and apply them
+        const urlFilters = getUrlFilters();
+        if (urlFilters.length > 0) {
+            urlFilters.forEach(category => {
+                const button = document.querySelector(`.filter-btn[data-category="${category}"]`);
+                if (button) {
+                    button.classList.add('active');
+                    allButton.classList.remove('active');
+                }
+            });
+            
+            const filteredVideos = videoData.filter(video => 
+                urlFilters.every(cat => video.category.includes(cat))
+            );
+            displayVideos(filteredVideos);
+        } else {
+            // Initial load of all videos if no filters in URL
+            displayVideos(videoData);
+        }
 
-    // Check URL for video ID after videos are loaded
-    checkUrlForVideo();
+        // Check URL for video ID after videos are loaded
+        checkUrlForVideo();
     } catch (error) {
-    console.error('Error loading videos:', error);
+        console.error('Error loading videos:', error);
     }
 }
 
@@ -234,7 +152,10 @@ function filterVideos(category, videos, event) {
 let currentVideoIndex = 0;
 let currentVideos = [];
 // Function to open modal with video
-function openModal(videoId) {
+async function openModal(videoId) {
+    if (!videoData) {
+        videoData = await fetchVideoData();
+    }
     const modal = document.getElementById('videoModal');
     currentVideos = document.querySelectorAll('.video-wrapper');
     currentVideoIndex = Array.from(currentVideos).findIndex(
@@ -332,7 +253,7 @@ function updateSuggestedVideos(currentVideoId) {
     .filter(cat => cat !== 'all'); // Exclude 'all' from filters
     
     // Filter videos based on active filters and current video
-    let suggestedVideos = videoData.videos
+    let suggestedVideos = videoData
     .filter(video => video.id !== currentVideoId);
     
     // Apply category filters if active
@@ -472,6 +393,8 @@ document.getElementById('videoModal').addEventListener('click', (e) => {
 });
 // Load videos when the page is ready
 document.addEventListener('DOMContentLoaded', () => {
+    currentPage = 1;
+    hasMoreVideos = true;
     loadVideos();
 });
 
