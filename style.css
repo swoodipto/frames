@@ -130,6 +130,7 @@
     line-height: var(--font-20-line-height);
     letter-spacing: var(--font-20-letter-spacing);
     color: var(--primary-dark-200);
+    text-transform: var(--brand-casing);
   }
 
   .filter-btn.active {

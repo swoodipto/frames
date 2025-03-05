@@ -493,7 +493,7 @@ function updateLoadMoreButton(videos) {
     if (hasMoreVideos) {
     const loadMoreBtn = document.createElement('button');
     loadMoreBtn.className = 'load-more-btn';
-    loadMoreBtn.textContent = 'Load More';
+    loadMoreBtn.textContent = 'spoil me with more';
     loadMoreBtn.onclick = () => {
         currentPage++;
         displayVideos(videos, true);
