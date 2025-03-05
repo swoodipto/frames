@@ -497,7 +497,7 @@
     padding: 12px 24px;
     background-color: var(--primary-light-300);
     border: none;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-small);
     cursor: pointer;
     font-size: var(--font-16);
     font-weight: var(--font-16-weight);
