@@ -196,13 +196,12 @@
   }
 
   .filter-btn {
-    padding: 3px 14px 10px 20px;
+    padding: 4px 14px 10px 20px;
     margin: 0 6px;
     border: none;
     border-radius: var(--border-radius-round);
     background-color: var(--primary-light-300);
     cursor: pointer;
-    transition: background-color 0.3s;
     margin-bottom: 8px;
     font-size: var(--font-20);
     font-weight: var(--font-20-weight);
@@ -216,12 +215,17 @@
   .filter-btn sup {
     font-size: 0.6em;
     margin-left: 4px;
-    opacity: 0.8;
+    color: var(--primary-dark-300);
     font-weight: normal;
     vertical-align: super;
   }
 
   .filter-btn.active {
+    background-color: var(--accent);
+    color: var(--primary-light);
+  }
+
+  .filter-btn.active sup {
     background-color: var(--accent);
     color: var(--primary-light);
   }
