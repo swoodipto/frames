@@ -1,103 +1,103 @@
 // Video data
 const videoData = {
-"videos": [
-    {
-        "number": 1,
-        "id": "1PWJqjd2d6M",
-        "title": "For All Things Worth Saving",
-        "company": "Dropbox",
-        "category": ["Story", "2D", "UI"],
-        "length": "49s"
-    },
-    {
-        "number": 2,
-        "id": "bv936eeoxmQ",
-        "title": "Framer Design: Design on an intuitive Canvas",
-        "company": "Framer",
-        "category": ["2D", "UI"],
-        "length": "59s"
-    },
-    {
-        "number": 3,
-        "id": "5XxIwPKMlek",
-        "title": "Introducing Wix Studio",
-        "company": "Wix",
-        "category": ["2D", "3D", "UI"],
-        "length": "1m 43s"
-    },
-    {
-        "number": 4,
-        "id": "Er04BDbtSIg",
-        "title": "School of Motion: Join the Movement",
-        "company": "School of Motion",
-        "category": ["2D", "Faux 3D", "Story"],
-        "length": "1m 50s"
-    },
-    {
-        "number": 5,
-        "id": "pBy1zgt0XPc",
-        "title": "What is GitHub?",
-        "company": "GitHub",
-        "category": ["Story", "2D", "3D", "Faux 3D"],
-        "length": "2m 43s"
-    },
-    {
-        "number": 6,
-        "id": "EDATYbzYGiE",
-        "title": "What is Slack? Your Work OS",
-        "company": "Slack",
-        "category": ["2D", "UI"],
-        "length": "2m 48s"
-    },
-    {
-        "number": 7,
-        "id": "_qCBg_Wsr8M",
-        "title": "Welcome to the Age of No-code",
-        "company": "Webflow",
-        "category": ["Story", "2D", "Faux 3D"],
-        "length": "1m 29s"
-    },
-    {
-        "number": 8,
-        "id": "sIfP9h-H23s",
-        "title": "Introducing Spline",
-        "company": "Spline",
-        "category": ["Story", "2D", "3D"],
-        "length": "1m 25s"
-    },
-    {
-        "number": 9,
-        "id": "VQ2scsSPZN4",
-        "title": "Google Bard",
-        "company": "Greyable",
-        "category": ["Typography", "2D", "UI"],
-        "length": "35s"
-    },
-    {
-        "number": 10,
-        "id": "jX4dLxiso6A",
-        "title": "Doks.AI by Zelios",
-        "company": "Doks.AI",
-        "category": ["2D", "Faux 3D", "UI"],
-        "length": "20s"
-    },
-    {
-        "number": 11,
-        "id": "9K6U_mD3Ock",
-        "title": "Adobe Creative Cloud",
-        "company": "허투루",
-        "category": ["2D", "Faux 3D", "UI"],
-        "length": "31s"
-    },
-    {
-        "number": 12,
-        "id": "4SCjXcBeW1E",
-        "title": "Introducing Google Vids",
-        "company": "Google",
-        "category": ["Typography", "2D", "UI"],
-        "length": "1m 26s"
-    }
-]
+    "videos": [
+        {
+            "number": 1,
+            "id": "1PWJqjd2d6M",
+            "title": "For All Things Worth Saving",
+            "company": "Dropbox",
+            "category": ["Story", "UI"],
+            "length": "49s"
+        },
+        {
+            "number": 2,
+            "id": "bv936eeoxmQ",
+            "title": "Framer Design: Design on an intuitive Canvas",
+            "company": "Framer",
+            "category": ["UI"],
+            "length": "59s"
+        },
+        {
+            "number": 3,
+            "id": "5XxIwPKMlek",
+            "title": "Introducing Wix Studio",
+            "company": "Wix",
+            "category": ["3D", "UI"],
+            "length": "1m 43s"
+        },
+        {
+            "number": 4,
+            "id": "Er04BDbtSIg",
+            "title": "School of Motion: Join the Movement",
+            "company": "School of Motion",
+            "category": ["2D", "Faux 3D", "Story"],
+            "length": "1m 50s"
+        },
+        {
+            "number": 5,
+            "id": "pBy1zgt0XPc",
+            "title": "What is GitHub?",
+            "company": "GitHub",
+            "category": ["Story", "2D", "3D", "Faux 3D"],
+            "length": "2m 43s"
+        },
+        {
+            "number": 6,
+            "id": "EDATYbzYGiE",
+            "title": "What is Slack? Your Work OS",
+            "company": "Slack",
+            "category": ["2D", "UI"],
+            "length": "2m 48s"
+        },
+        {
+            "number": 7,
+            "id": "_qCBg_Wsr8M",
+            "title": "Welcome to the Age of No-code",
+            "company": "Webflow",
+            "category": ["Story", "2D", "Faux 3D"],
+            "length": "1m 29s"
+        },
+        {
+            "number": 8,
+            "id": "sIfP9h-H23s",
+            "title": "Introducing Spline",
+            "company": "Spline",
+            "category": ["Story", "2D", "3D"],
+            "length": "1m 25s"
+        },
+        {
+            "number": 9,
+            "id": "VQ2scsSPZN4",
+            "title": "Google Bard",
+            "company": "Greyable",
+            "category": ["Typography", "UI"],
+            "length": "35s"
+        },
+        {
+            "number": 10,
+            "id": "jX4dLxiso6A",
+            "title": "Doks.AI by Zelios",
+            "company": "Doks.AI",
+            "category": ["Faux 3D", "UI"],
+            "length": "20s"
+        },
+        {
+            "number": 11,
+            "id": "9K6U_mD3Ock",
+            "title": "Adobe Creative Cloud",
+            "company": "허투루",
+            "category": ["2D", "Faux 3D", "UI"],
+            "length": "31s"
+        },
+        {
+            "number": 12,
+            "id": "4SCjXcBeW1E",
+            "title": "Introducing Google Vids",
+            "company": "Google",
+            "category": ["Typography", "UI"],
+            "length": "1m 26s"
+        }
+    ]
 };
 
 // Add these variables at the top of your script

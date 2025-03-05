@@ -71,6 +71,16 @@
     --container-padding: 32px;
   }
 
+  ::selection {
+    background-color: var(--accent);
+    color: var(--primary-light);
+  }
+
+  ::-moz-selection {
+    background-color: var(--accent);
+    color: var(--primary-light);
+  }
+
   html {
     font: var(--base-typograhy);
     text-transform: var(--brand-casing);
@@ -84,6 +94,17 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     background-color: var(--body-bgcolor);
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    padding: 2px 4px;
+    border-radius: var(--border-radius-small);
+  }
+
+  a:hover {
+    background-color: var(--accent-100);
   }
 
   .container {
@@ -476,7 +497,7 @@
     padding: 12px 24px;
     background-color: var(--primary-light-300);
     border: none;
-    border-radius: var(--border-radius-round);
+    border-radius: var(--border-radius);
     cursor: pointer;
     font-size: var(--font-16);
     font-weight: var(--font-16-weight);
