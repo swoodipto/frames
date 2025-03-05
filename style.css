@@ -117,7 +117,7 @@
 
   button,
   select {
-    text-transform: none;
+    text-transform: var(--brand-casing);
   }
 
   button,
@@ -421,31 +421,42 @@
 
   .modal-video-info {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    color: white;
+    color: var(--primary-light);
     padding: 0 20px;
     width: var(--container-width-m);
     margin: 0 auto;
+    gap: 120px;
   }
 
   .modal-video-left {
     display: flex;
-    align-items: center;
     gap: 10px;
   }
 
   .modal-video-number {
-    color: #ff0000;
-    font-size: 1.2em;
+    font-size: var(--font-14);
+    font-weight: var(--font-14-weight);
+    line-height: var(--font-14-line-height);
+    letter-spacing: var(--font-14-letter-spacing);
+    color: var(--primary-light-300);
   }
 
   .modal-video-title {
-    font-size: 1.2em;
+    font-size: 1.5rem;
+    text-transform: var(--no-brand-casing);
+    letter-spacing: var(--brand-letter-spacing);
+    line-height: 1em;
+    margin-top: -0.13em;
   }
 
   .modal-video-company {
-    color: #999;
+    font-size: var(--font-14);
+    font-weight: var(--font-14-weight);
+    line-height: var(--font-14-line-height);
+    letter-spacing: var(--font-14-letter-spacing);
+    color: var(--primary-dark-200);
+    text-transform: var(--no-brand-casing);
   }
 
   .modal-video-player {
@@ -472,28 +483,20 @@
     border-radius: var(--border-radius-small);
   }
 
-  .modal-close {
-    color: white;
-    font-size: 24px;
+  .modal-btn {
+    color: var(--primary-dark-300);
+    background-color: rgba(51, 51, 51, 0.6);
+    font-size: var(--font-20);
+    font-weight: var(--font-20-weight);
+    line-height: var(--font-20-line-height);
+    letter-spacing: var(--font-20-letter-spacing);
     cursor: pointer;
-    background: none;
     border: none;
-    padding: 8px;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-round);
   }
 
   .modal-nav-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: white;
-    padding: 20px;
-    font-size: 24px;
-    cursor: pointer;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     transition: background-color 0.3s;
   }
 
@@ -507,7 +510,7 @@
   }
 
   .suggested-videos-section {
-    margin: 40px 0;
+    margin: 80px 0;
   }
 
   .clearfix {
@@ -518,10 +521,15 @@
   }
 
   .suggested-videos-title {
-    color: white;
-    font-size: 1.5em;
+    color: var(--primary-dark-400);
+    font-size: 1rem;
     margin-bottom: 20px;
-    padding-left: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .suggested-videos-title div:first-child {
+    color: var(--primary-dark-300);
   }
 
   .suggested-videos-grid {
