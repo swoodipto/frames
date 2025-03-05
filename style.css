@@ -196,7 +196,7 @@
   }
 
   .filter-btn {
-    padding: 8px 20px;
+    padding: 3px 14px 10px 20px;
     margin: 0 6px;
     border: none;
     border-radius: var(--border-radius-round);
@@ -210,6 +210,15 @@
     letter-spacing: var(--font-20-letter-spacing);
     color: var(--primary-dark-200);
     text-transform: var(--brand-casing);
+    position: relative;
+  }
+
+  .filter-btn sup {
+    font-size: 0.6em;
+    margin-left: 4px;
+    opacity: 0.8;
+    font-weight: normal;
+    vertical-align: super;
   }
 
   .filter-btn.active {

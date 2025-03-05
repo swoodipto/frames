@@ -44,15 +44,30 @@ async function loadVideos() {
         const allButton = document.createElement('button');
         allButton.className = 'filter-btn active';
         allButton.textContent = 'All';
+        
+        // Add count for all videos
+        const allCount = document.createElement('sup');
+        allCount.textContent = videoData.length;
+        allButton.appendChild(allCount);
+        
         allButton.setAttribute('data-category', 'all');
         allButton.addEventListener('click', (event) => filterVideos('all', videoData, event));
         filterContainer.appendChild(allButton);
         
         // Create category filter buttons
         categories.forEach(category => {
+            // Count videos in this category
+            const categoryCount = videoData.filter(video => video.category.includes(category)).length;
+            
             const button = document.createElement('button');
             button.className = 'filter-btn';
             button.textContent = category;
+            
+            // Add count as superscript
+            const count = document.createElement('sup');
+            count.textContent = categoryCount;
+            button.appendChild(count);
+            
             button.setAttribute('data-category', category);
             button.addEventListener('click', (event) => filterVideos(category, videoData, event));
             filterContainer.appendChild(button);
