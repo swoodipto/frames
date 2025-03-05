@@ -102,7 +102,7 @@ const videoData = {
 
 // Add these variables at the top of your script
 let currentPage = 1;
-const videosPerPage = 9;
+const videosPerPage = 6;
 let hasMoreVideos = true;
 
 // Function to load and display videos

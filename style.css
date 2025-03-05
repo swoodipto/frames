@@ -210,7 +210,7 @@
     padding-bottom: 56.25%;
     /* 16:9 Aspect Ratio */
     background-color: #000;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-small);
     overflow: hidden;
   }
 
@@ -246,7 +246,7 @@
 
   .video-number {
     display: flex;
-    color: #ff0000;
+    color: var(--accent);
     white-space: nowrap;
   }
 
@@ -482,7 +482,7 @@
     font-weight: var(--font-16-weight);
     line-height: var(--font-16-line-height);
     letter-spacing: var(--font-16-letter-spacing);
-    color: var(--primary-dark-200);
+    color: var(--primary-dark-300);
     transition: background-color 0.3s;
   }
 
