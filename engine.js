@@ -1,6 +1,12 @@
 // Replace the videoData constant with a variable
 let videoData = null;
 
+// Add this variable at the top with other global variables
+let player;
+
+// Add this variable to track if the video was paused by scrolling
+let pausedByScrolling = false;
+
 // Add function to fetch video data
 async function fetchVideoData() {
     try {
@@ -150,46 +156,53 @@ function filterVideos(category, videos, event) {
 }
 
 let currentVideoIndex = 0;
-let currentVideos = [];
 // Function to open modal with video
 async function openModal(videoId) {
-    if (!videoData) {
-        videoData = await fetchVideoData();
+    pausedByScrolling = false;
+    
+    if (player) {
+        player.destroy(); // Clean up previous player
     }
+    
     const modal = document.getElementById('videoModal');
-    currentVideos = document.querySelectorAll('.video-wrapper');
-    currentVideoIndex = Array.from(currentVideos).findIndex(
-    wrapper => wrapper.querySelector('iframe').src.includes(videoId)
-    );
+    
+    // Find the video data by ID instead of relying on DOM elements
+    currentVideoIndex = videoData.findIndex(video => video.id === videoId);
+    
+    // If video not found in videoData, default to first video
+    if (currentVideoIndex === -1) {
+        currentVideoIndex = 0;
+        console.error("Video ID not found:", videoId);
+    }
+    
     updateModalVideo();
     modal.style.display = 'flex';
-    window.scrollTo(0, 0); // Ensure page scrolls to top
-    modal.scrollTo(0, 0); // Ensure modal content scrolls to top
+    window.scrollTo(0, 0);
+    modal.scrollTo(0, 0);
     
-    // Add keyboard listener
+    setupModalScrollHandler();
+    
     document.addEventListener('keydown', handleKeyPress);
     
-    // Update URL preserving filter parameters
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('frame', videoId);
     window.history.replaceState({}, '', `?${urlParams.toString()}`);
 }
 // Function to close modal
 function closeModal() {
+    if (player) {
+        player.destroy();
+    }
     const modal = document.getElementById('videoModal');
     const modalVideoContainer = document.getElementById('modalVideoContainer');
     modal.style.display = 'none';
     modalVideoContainer.innerHTML = '';
     
-    // Remove keyboard listener
     document.removeEventListener('keydown', handleKeyPress);
     
-    // Get current URL parameters
     const urlParams = new URLSearchParams(window.location.search);
-    // Remove frame parameter
     urlParams.delete('frame');
     
-    // Update URL, preserving any filter parameters
     const remainingParams = urlParams.toString();
     const newUrl = remainingParams ? `?${remainingParams}` : window.location.pathname;
     window.history.replaceState({}, '', newUrl);
@@ -198,18 +211,15 @@ function closeModal() {
 function checkUrlForVideo() {
     const urlParams = new URLSearchParams(window.location.search);
     const videoId = urlParams.get('frame');
-    if (videoId) {
-    // Get all video wrappers
-    currentVideos = document.querySelectorAll('.video-wrapper');
-    if (currentVideos.length > 0) {
+    if (videoId && videoData.length > 0) {
         openModal(videoId);
-    }
     }
 }
 // Function to navigate between videos
 function navigateVideo(direction) {
-    currentVideoIndex = (currentVideoIndex + direction + currentVideos.length) % currentVideos.length;
-    const videoId = currentVideos[currentVideoIndex].querySelector('iframe').src.split('?')[0].split('/').pop();
+    // Navigate through the videoData array instead of DOM elements
+    currentVideoIndex = (currentVideoIndex + direction + videoData.length) % videoData.length;
+    const videoId = videoData[currentVideoIndex].id;
     
     // Update URL preserving filter parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -221,26 +231,36 @@ function navigateVideo(direction) {
 // Function to update modal video
 function updateModalVideo() {
     const modalVideoContainer = document.getElementById('modalVideoContainer');
-    const currentVideo = currentVideos[currentVideoIndex];
-    const videoId = currentVideo.querySelector('iframe').src.split('?')[0].split('/').pop();
-    // Update video metadata
-    const number = formatProjectNumber(currentVideo.querySelector('.video-number').textContent.replace(/[\[\]]/g, ''));
-    const title = currentVideo.querySelector('.video-title').textContent;
-    const companyAndCategory = currentVideo.querySelector('.video-company').textContent;
-    document.querySelector('.modal-video-number').textContent = number;
-    document.querySelector('.modal-video-title').textContent = title;
-    document.querySelector('.modal-video-company').textContent = companyAndCategory;
-    const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&vq=hd1080`;
-    iframe.title = "YouTube video player";
-    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    const currentVideo = videoData[currentVideoIndex];
+    
+    // Clear previous video
     modalVideoContainer.innerHTML = '';
-    modalVideoContainer.appendChild(iframe);
-    // Update navigation buttons
-    document.getElementById('prevButton').disabled = currentVideoIndex === 0;
-    document.getElementById('nextButton').disabled = currentVideoIndex === currentVideos.length - 1;
+    
+    // Create new player
+    const playerDiv = document.createElement('div');
+    playerDiv.id = 'youtube-player';
+    modalVideoContainer.appendChild(playerDiv);
+    
+    // Initialize YouTube player
+    player = new YT.Player('youtube-player', {
+        videoId: currentVideo.id,
+        playerVars: {
+            'autoplay': 1,
+            'modestbranding': 1,
+            'rel': 0
+        },
+        events: {
+            'onStateChange': onPlayerStateChange
+        }
+    });
+    
+    // Update video info
+    document.querySelector('.modal-video-number').textContent = formatProjectNumber(currentVideo.number);
+    document.querySelector('.modal-video-title').textContent = currentVideo.title;
+    document.querySelector('.modal-video-company').textContent = currentVideo.company;
+    
     // Update suggested videos
-    updateSuggestedVideos(videoId);
+    updateSuggestedVideos(currentVideo.id);
 }
 // Function to update suggested videos
 function updateSuggestedVideos(currentVideoId) {
@@ -395,6 +415,7 @@ document.getElementById('videoModal').addEventListener('click', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     currentPage = 1;
     hasMoreVideos = true;
+    loadYouTubeAPI();
     loadVideos();
 });
 
@@ -423,4 +444,69 @@ function updateLoadMoreButton(videos) {
     };
     document.getElementById('videoGallery').after(loadMoreBtn);
     }
+}
+
+// Add function to handle player state changes
+function onPlayerStateChange(event) {
+    const suggestedVideosSection = document.querySelector('.suggested-videos-section');
+    
+    if (event.data === YT.PlayerState.PLAYING) {
+        // Video is playing, reduce opacity
+        suggestedVideosSection.style.opacity = '0.3';
+        suggestedVideosSection.style.transition = 'opacity 0.3s ease';
+    } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+        // Video is paused or ended, restore opacity
+        suggestedVideosSection.style.opacity = '1';
+        
+        // If paused by user (not by scrolling), reset the flag
+        if (event.data === YT.PlayerState.PAUSED && !pausedByScrolling) {
+            pausedByScrolling = false;
+        }
+    }
+}
+
+// Add YouTube API loading
+function loadYouTubeAPI() {
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
+
+// Add this function to handle YouTube API ready state
+window.onYouTubeIframeAPIReady = function() {
+    // YouTube API is ready
+    console.log('YouTube API Ready');
+};
+
+// Update the modal scroll handler function
+function setupModalScrollHandler() {
+    const modal = document.getElementById('videoModal');
+    const videoContainer = document.querySelector('.modal-video-player');
+    
+    modal.addEventListener('scroll', function() {
+        if (!player) return;
+        
+        // Get the position of the video container relative to the viewport
+        const rect = videoContainer.getBoundingClientRect();
+        const videoHeight = rect.height;
+        
+        // Calculate how much of the video is still visible (as a percentage)
+        const visiblePercentage = Math.max(0, Math.min(100, 
+            (rect.bottom / videoHeight) * 100
+        ));
+        
+        // If less than 75% of the video is visible, pause it
+        if (visiblePercentage < 75 && player.getPlayerState() === YT.PlayerState.PLAYING) {
+            player.pauseVideo();
+            pausedByScrolling = true; // Mark that we paused by scrolling
+        } 
+        // If more than 75% of the video is visible and it was paused by scrolling, resume it
+        else if (visiblePercentage >= 75 && 
+                 pausedByScrolling && 
+                 player.getPlayerState() === YT.PlayerState.PAUSED) {
+            player.playVideo();
+            pausedByScrolling = false; // Reset the flag
+        }
+    });
 }

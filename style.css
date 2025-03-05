@@ -529,7 +529,7 @@
   }
 
   .suggested-videos-title div:first-child {
-    color: var(--primary-dark-300);
+    color: var(--primary-dark-100);
   }
 
   .suggested-videos-grid {
