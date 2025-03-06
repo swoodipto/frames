@@ -10,6 +10,12 @@ let pausedByScrolling = false;
 // Add these variables at the top with other global variables
 let videoObservers = new Map(); // Track observers for each video
 
+// Add this at the top with other global variables
+let mainContentState = {
+    scrollPosition: 0,
+    content: null
+};
+
 // Add function to fetch video data
 async function fetchVideoData() {
     try {
@@ -179,6 +185,7 @@ function filterVideos(category, videos, event) {
 let currentVideoIndex = 0;
 // Function to open modal with video
 async function openModal(videoId) {
+    console.log('Opening modal for video:', videoId);
     pausedByScrolling = false;
     
     if (player) {
@@ -187,7 +194,44 @@ async function openModal(videoId) {
     
     const modal = document.getElementById('videoModal');
     
-    // Find the video data by ID instead of relying on DOM elements
+    // Store scroll position and detach main content
+    mainContentState.scrollPosition = window.scrollY;
+    
+    // Find and store main content - specifically the video gallery
+    const mainContent = document.querySelector('.video-grid');
+    if (mainContent) {
+        console.log('Found video grid, preparing to detach');
+        mainContentState.content = mainContent;
+        
+        // Create placeholder to maintain document height
+        const placeholder = document.createElement('div');
+        placeholder.style.height = `${mainContent.offsetHeight}px`;
+        placeholder.id = 'main-content-placeholder';
+        
+        // Clean up video resources before detaching
+        mainContent.querySelectorAll('.video-container iframe').forEach(iframe => {
+            const wrapper = iframe.closest('.video-wrapper');
+            if (wrapper) {
+                const videoId = wrapper.dataset.videoId;
+                if (videoId) {
+                    const container = iframe.parentElement;
+                    unloadVideo(container, videoId);
+                }
+            }
+        });
+        
+        // Disconnect all observers
+        videoObservers.forEach(observer => observer.disconnect());
+        videoObservers.clear();
+        
+        // Replace main content with placeholder
+        mainContent.parentNode.replaceChild(placeholder, mainContent);
+        console.log('Video grid detached and replaced with placeholder');
+    } else {
+        console.warn('Video grid not found');
+    }
+    
+    // Find the video data by ID
     currentVideoIndex = videoData.findIndex(video => video.id === videoId);
     
     // If video not found in videoData, default to first video
@@ -201,8 +245,10 @@ async function openModal(videoId) {
     window.scrollTo(0, 0);
     modal.scrollTo(0, 0);
     
-    setupModalScrollHandler();
+    // Prevent body scrolling while modal is open
+    document.body.style.overflow = 'hidden';
     
+    setupModalScrollHandler();
     document.addEventListener('keydown', handleKeyPress);
     
     const urlParams = new URLSearchParams(window.location.search);
@@ -211,6 +257,7 @@ async function openModal(videoId) {
 }
 // Function to close modal
 function closeModal() {
+    console.log('Closing modal');
     if (player) {
         player.destroy();
     }
@@ -218,6 +265,32 @@ function closeModal() {
     const modalVideoContainer = document.getElementById('modalVideoContainer');
     modal.style.display = 'none';
     modalVideoContainer.innerHTML = '';
+    
+    // Restore main content
+    const placeholder = document.getElementById('main-content-placeholder');
+    if (placeholder && mainContentState.content) {
+        console.log('Found placeholder and stored content, restoring video grid');
+        // Restore the main content
+        placeholder.parentNode.replaceChild(mainContentState.content, placeholder);
+        
+        // Restore scroll position
+        window.scrollTo({
+            top: mainContentState.scrollPosition,
+            behavior: 'auto' // Use auto to prevent smooth scrolling
+        });
+        
+        // Re-initialize video observers for visible videos
+        initializeVideoObservers();
+        
+        // Clear the stored content reference
+        mainContentState.content = null;
+        console.log('Video grid restored and observers reinitialized');
+    } else {
+        console.warn('Placeholder or stored content not found');
+    }
+    
+    // Re-enable body scrolling
+    document.body.style.overflow = '';
     
     document.removeEventListener('keydown', handleKeyPress);
     
@@ -233,7 +306,10 @@ function checkUrlForVideo() {
     const urlParams = new URLSearchParams(window.location.search);
     const videoId = urlParams.get('frame');
     if (videoId && videoData.length > 0) {
-        openModal(videoId);
+        // Small delay to ensure content is fully loaded
+        setTimeout(() => {
+            openModal(videoId);
+        }, 100);
     }
 }
 // Function to navigate between videos
@@ -874,3 +950,39 @@ function inspectVideoContainers() {
 
 // Call this after videos are loaded
 setTimeout(inspectVideoContainers, 2000);
+
+// Add error handling for edge cases
+window.addEventListener('error', function(event) {
+    // Ignore YouTube postMessage errors as they're not critical
+    if (event.message.includes('postMessage') && event.message.includes('youtube.com')) {
+        return;
+    }
+    
+    // Handle other errors
+    if (document.getElementById('videoModal').style.display === 'flex') {
+        console.error('Error in modal:', event.error);
+        closeModal(); // Attempt to close modal and restore content
+    }
+});
+
+// Add a cleanup function for when the page is unloaded
+window.addEventListener('beforeunload', () => {
+    // Restore main content if modal is open
+    if (document.getElementById('videoModal').style.display === 'flex') {
+        const placeholder = document.getElementById('main-content-placeholder');
+        if (placeholder && mainContentState.content) {
+            placeholder.parentNode.replaceChild(mainContentState.content, placeholder);
+        }
+    }
+});
+
+// Optional: Add performance monitoring
+function logMemoryUsage(action) {
+    if (window.performance && window.performance.memory) {
+        console.log(`Memory usage (${action}):`, {
+            usedJSHeapSize: Math.round(window.performance.memory.usedJSHeapSize / (1024 * 1024)) + 'MB',
+            totalJSHeapSize: Math.round(window.performance.memory.totalJSHeapSize / (1024 * 1024)) + 'MB',
+            timestamp: new Date().toISOString()
+        });
+    }
+}
