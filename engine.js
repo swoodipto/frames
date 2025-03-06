@@ -7,6 +7,9 @@ let player;
 // Add this variable to track if the video was paused by scrolling
 let pausedByScrolling = false;
 
+// Add these variables at the top with other global variables
+let videoObservers = new Map(); // Track observers for each video
+
 // Add function to fetch video data
 async function fetchVideoData() {
     try {
@@ -37,41 +40,44 @@ async function loadVideos() {
         // Get unique categories (excluding 'All')
         const categories = [...new Set(videoData.flatMap(video => video.category))];
         
-        // Create filter buttons
+        // Create filter buttons - ONLY if they don't already exist
         const filterContainer = document.getElementById('filterContainer');
         
-        // Create "All" button
-        const allButton = document.createElement('button');
-        allButton.className = 'filter-btn active';
-        allButton.textContent = 'All';
-        
-        // Add count for all videos
-        const allCount = document.createElement('sup');
-        allCount.textContent = videoData.length;
-        allButton.appendChild(allCount);
-        
-        allButton.setAttribute('data-category', 'all');
-        allButton.addEventListener('click', (event) => filterVideos('all', videoData, event));
-        filterContainer.appendChild(allButton);
-        
-        // Create category filter buttons
-        categories.forEach(category => {
-            // Count videos in this category
-            const categoryCount = videoData.filter(video => video.category.includes(category)).length;
+        // Clear existing filters first to prevent duplicates
+        if (filterContainer.children.length === 0) {
+            // Create "All" button
+            const allButton = document.createElement('button');
+            allButton.className = 'filter-btn active';
+            allButton.textContent = 'All';
             
-            const button = document.createElement('button');
-            button.className = 'filter-btn';
-            button.textContent = category;
+            // Add count for all videos
+            const allCount = document.createElement('sup');
+            allCount.textContent = videoData.length;
+            allButton.appendChild(allCount);
             
-            // Add count as superscript
-            const count = document.createElement('sup');
-            count.textContent = categoryCount;
-            button.appendChild(count);
+            allButton.setAttribute('data-category', 'all');
+            allButton.addEventListener('click', (event) => filterVideos('all', videoData, event));
+            filterContainer.appendChild(allButton);
             
-            button.setAttribute('data-category', category);
-            button.addEventListener('click', (event) => filterVideos(category, videoData, event));
-            filterContainer.appendChild(button);
-        });
+            // Create category filter buttons
+            categories.forEach(category => {
+                // Count videos in this category
+                const categoryCount = videoData.filter(video => video.category.includes(category)).length;
+                
+                const button = document.createElement('button');
+                button.className = 'filter-btn';
+                button.textContent = category;
+                
+                // Add count as superscript
+                const count = document.createElement('sup');
+                count.textContent = categoryCount;
+                button.appendChild(count);
+                
+                button.setAttribute('data-category', category);
+                button.addEventListener('click', (event) => filterVideos(category, videoData, event));
+                filterContainer.appendChild(button);
+            });
+        }
         
         // Check for filter parameters in URL and apply them
         const urlFilters = getUrlFilters();
@@ -312,11 +318,15 @@ function updateSuggestedVideos(currentVideoId) {
     };
     suggestedVideosContainer.appendChild(videoWrapper);
     });
+    
+    // Initialize observers for suggested videos
+    initializeVideoObservers();
 }
 // Helper function to create video element (reuse code from displayVideos)
 function createVideoElement(video) {
     const videoWrapper = document.createElement('div');
     videoWrapper.className = 'video-wrapper';
+    videoWrapper.dataset.videoId = video.id;
     
     // Create top info section
     const videoInfoTop = document.createElement('div');
@@ -333,15 +343,30 @@ function createVideoElement(video) {
     videoInfoTop.appendChild(numberSpan);
     videoInfoTop.appendChild(companySpan);
     
-    // Create video container
+    // Create video container with fixed aspect ratio
     const videoContainer = document.createElement('div');
     videoContainer.className = 'video-container';
+    videoContainer.style.position = 'relative';
+    videoContainer.style.width = '100%';
+    videoContainer.style.height = '0';
+    videoContainer.style.paddingBottom = '56.25%'; // 16:9 aspect ratio
+    videoContainer.style.backgroundColor = 'var(--primary-dark-400)';
+    videoContainer.style.borderRadius = 'var(--border-radius-small)';
+    videoContainer.style.overflow = 'hidden';
     
-    const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube.com/embed/${video.id}?mute=1&controls=0&rel=0&autoplay=1&loop=1&playlist=${video.id}&showinfo=0&cc_load_policy=0&modestbranding=1&vq=small`;
-    iframe.title = "YouTube video player";
-    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-    iframe.loading = "lazy";
+    // Create placeholder with proper positioning
+    const placeholder = document.createElement('div');
+    placeholder.className = 'video-placeholder';
+    placeholder.style.position = 'absolute';
+    placeholder.style.top = '0';
+    placeholder.style.left = '0';
+    placeholder.style.width = '100%';
+    placeholder.style.height = '100%';
+    placeholder.style.backgroundSize = 'cover';
+    placeholder.style.backgroundPosition = 'center';
+    placeholder.style.backgroundImage = `url(https://img.youtube.com/vi/${video.id}/mqdefault.jpg)`;
+    
+    videoContainer.appendChild(placeholder);
     
     // Create bottom info section
     const videoInfoBottom = document.createElement('div');
@@ -362,7 +387,6 @@ function createVideoElement(video) {
     lengthSpan.textContent = video.length;
     
     // Assemble the elements
-    videoContainer.appendChild(iframe);
     titleContainer.appendChild(titleSpan);
     lengthContainer.appendChild(lengthSpan);
     videoInfoBottom.appendChild(titleContainer);
@@ -419,6 +443,9 @@ function displayVideos(videos, loadMore = false) {
     
     // Add or update "Load More" button
     updateLoadMoreButton(sortedVideos);
+    
+    // Initialize observers for new videos
+    initializeVideoObservers();
 }
 // Close modal when clicking outside the video or on close button
 document.getElementById('videoModal').addEventListener('click', (e) => {
@@ -431,7 +458,10 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPage = 1;
     hasMoreVideos = true;
     loadYouTubeAPI();
-    loadVideos();
+    loadVideos().then(() => {
+        addPlaceholderStyles();
+        initializeVideoObservers();
+    });
 });
 
 // Add this helper function at the top level
@@ -525,3 +555,322 @@ function setupModalScrollHandler() {
         }
     });
 }
+
+// Add this function to initialize intersection observers for videos
+function initializeVideoObservers() {
+    // Disconnect any existing observers
+    videoObservers.forEach(observer => observer.disconnect());
+    videoObservers.clear();
+    
+    // Create new observers for all videos
+    document.querySelectorAll('.video-container').forEach(container => {
+        const observer = createVideoObserver(container);
+        const videoId = container.closest('.video-wrapper')?.dataset.videoId;
+        if (videoId) {
+            videoObservers.set(videoId, observer);
+            observer.observe(container);
+        }
+    });
+}
+
+// Function to create an observer for a video container
+function createVideoObserver(container) {
+    return new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const wrapper = entry.target.closest('.video-wrapper');
+            if (!wrapper) return;
+            
+            const videoId = wrapper.dataset.videoId;
+            if (!videoId) return;
+            
+            // Add a small threshold to prevent rapid loading/unloading at viewport edges
+            if (entry.isIntersecting && entry.intersectionRatio > 0.2) {
+                // Video is visible in viewport - load if not already loaded
+                if (!entry.target.querySelector('iframe')) {
+                    loadVideo(entry.target, videoId);
+                }
+            } else if (!entry.isIntersecting || entry.intersectionRatio < 0.1) {
+                // Video is out of viewport - unload to save memory
+                // Only unload if it's significantly out of view
+                const iframe = entry.target.querySelector('iframe');
+                if (iframe) {
+                    unloadVideo(entry.target, videoId);
+                }
+            }
+        });
+    }, {
+        root: null,
+        rootMargin: '100px', // Larger margin to start loading earlier
+        threshold: [0.1, 0.2, 0.5] // Multiple thresholds for smoother transitions
+    });
+}
+
+// Function to load a video
+function loadVideo(container, videoId) {
+    // Remove any existing content
+    container.innerHTML = '';
+    
+    // Create iframe with different parameters to try to fix letterboxing
+    const iframe = document.createElement('iframe');
+    
+    // Try a different set of parameters
+    iframe.src = `https://www.youtube.com/embed/${videoId}?mute=1&controls=0&rel=0&autoplay=1&loop=1&&showinfo=0&cc_load_policy=0&modestbranding=1&vq=small&iv_load_policy=3&fs=0&disablekb=1&playsinline=1`;
+    
+    iframe.title = "YouTube video player";
+    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    iframe.loading = "lazy";
+    
+    // Apply inline styles to force proper positioning and aspect ratio
+    iframe.style.position = 'absolute';
+    iframe.style.top = '0';
+    iframe.style.left = '0';
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.style.borderRadius = 'var(--border-radius-small)';
+    
+    container.appendChild(iframe);
+}
+
+// Function to unload a video
+function unloadVideo(container, videoId) {
+    // Find the iframe
+    const iframe = container.querySelector('iframe');
+    if (!iframe) return;
+    
+    // Check if placeholder already exists
+    let placeholder = container.querySelector('.video-placeholder');
+    
+    if (!placeholder) {
+        // Create placeholder with video thumbnail
+        placeholder = document.createElement('div');
+        placeholder.className = 'video-placeholder';
+        placeholder.style.backgroundImage = `url(https://img.youtube.com/vi/${videoId}/mqdefault.jpg)`;
+        container.appendChild(placeholder);
+    } else {
+        // Make existing placeholder visible again
+        placeholder.style.opacity = '1';
+    }
+    
+    // Remove the iframe after a short delay to prevent layout shift
+    setTimeout(() => {
+        if (iframe && iframe.parentNode) {
+            iframe.parentNode.removeChild(iframe);
+        }
+    }, 50);
+}
+
+// Replace the addPlaceholderStyles function with this version
+function addPlaceholderStyles() {
+    // Remove any existing placeholder styles to prevent duplicates
+    const existingStyle = document.getElementById('placeholder-styles');
+    if (existingStyle) {
+        existingStyle.remove();
+    }
+    
+    const style = document.createElement('style');
+    style.id = 'placeholder-styles';
+    style.textContent = `
+        /* Reset any existing styles that might interfere */
+        .video-container {
+            position: relative !important;
+            width: 100% !important;
+            height: 0 !important;
+            padding-bottom: 56.25% !important; /* 16:9 Aspect Ratio */
+            background-color: var(--primary-dark-400) !important;
+            border-radius: var(--border-radius-small) !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+        }
+        
+        .video-placeholder {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background-size: cover !important;
+            background-position: center !important;
+            border-radius: var(--border-radius-small) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .video-container iframe {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            border: none !important;
+            border-radius: var(--border-radius-small) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        /* Hide YouTube player chrome */
+        .ytp-chrome-top, .ytp-chrome-bottom {
+            display: none !important;
+        }
+        
+        /* Force aspect ratio for YouTube player */
+        .video-container iframe {
+            object-fit: cover !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Add window resize handler to reinitialize observers
+window.addEventListener('resize', debounce(() => {
+    initializeVideoObservers();
+}, 200));
+
+// Add scroll event handler to check for new videos after scrolling
+window.addEventListener('scroll', debounce(() => {
+    initializeVideoObservers();
+}, 200));
+
+// Helper function for debouncing
+function debounce(func, wait, immediate = false) {
+    let timeout;
+    return function(...args) {
+        const context = this;
+        const later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+        };
+        const callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    };
+}
+
+// Add a scroll position memory to maintain position when loading more videos
+let lastScrollPosition = 0;
+
+function updateLoadMoreButton(videos) {
+    // Remove existing button if it exists
+    const existingButton = document.querySelector('.load-more-btn');
+    if (existingButton) {
+        existingButton.remove();
+    }
+    
+    // Add new button if there are more videos
+    if (hasMoreVideos) {
+        const loadMoreBtn = document.createElement('button');
+        loadMoreBtn.className = 'load-more-btn';
+        loadMoreBtn.textContent = 'spoil me with more';
+        loadMoreBtn.onclick = () => {
+            // Store current scroll position before loading more
+            lastScrollPosition = window.scrollY;
+            
+            currentPage++;
+            displayVideos(videos, true);
+            
+            // Restore scroll position after a short delay to allow DOM updates
+            setTimeout(() => {
+                window.scrollTo({
+                    top: lastScrollPosition,
+                    behavior: 'auto' // Use 'auto' instead of 'smooth' to prevent additional animation
+                });
+            }, 100);
+        };
+        document.getElementById('videoGallery').after(loadMoreBtn);
+    }
+}
+
+// Use a more efficient scroll handler
+const efficientScrollHandler = debounce(() => {
+    // Only reinitialize observers for videos near the viewport
+    const viewportHeight = window.innerHeight;
+    const scrollY = window.scrollY;
+    const buffer = viewportHeight * 2; // 2x viewport height buffer
+    
+    document.querySelectorAll('.video-container').forEach(container => {
+        const rect = container.getBoundingClientRect();
+        const absoluteTop = rect.top + scrollY;
+        
+        // Only process containers that are within our buffer zone
+        if (absoluteTop >= scrollY - buffer && absoluteTop <= scrollY + viewportHeight + buffer) {
+            const videoId = container.closest('.video-wrapper')?.dataset.videoId;
+            if (videoId && !videoObservers.has(videoId)) {
+                const observer = createVideoObserver(container);
+                videoObservers.set(videoId, observer);
+                observer.observe(container);
+            }
+        }
+    });
+}, 100);
+
+// Replace the scroll event handler
+window.removeEventListener('scroll', window.lastScrollHandler);
+window.lastScrollHandler = efficientScrollHandler;
+window.addEventListener('scroll', efficientScrollHandler);
+
+// Add a resize handler that's less aggressive
+const efficientResizeHandler = debounce(() => {
+    // Disconnect all observers and reinitialize
+    videoObservers.forEach(observer => observer.disconnect());
+    videoObservers.clear();
+    
+    // Only initialize observers for videos near the viewport
+    efficientScrollHandler();
+}, 250);
+
+// Replace the resize event handler
+window.removeEventListener('resize', window.lastResizeHandler);
+window.lastResizeHandler = efficientResizeHandler;
+window.addEventListener('resize', efficientResizeHandler);
+
+// Add a helper function to preload images to prevent flashing
+function preloadThumbnail(videoId) {
+    const img = new Image();
+    img.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+}
+
+// Preload thumbnails for visible and nearby videos
+function preloadVisibleThumbnails() {
+    videoData.slice(0, currentPage * videosPerPage).forEach(video => {
+        preloadThumbnail(video.id);
+    });
+}
+
+// Call this after loading videos
+document.addEventListener('DOMContentLoaded', () => {
+    currentPage = 1;
+    hasMoreVideos = true;
+    loadYouTubeAPI();
+    loadVideos().then(() => {
+        addPlaceholderStyles();
+        initializeVideoObservers();
+        preloadVisibleThumbnails();
+    });
+});
+
+// Add this function to help us debug the issue
+function inspectVideoContainers() {
+    console.log("Inspecting video containers...");
+    const containers = document.querySelectorAll('.video-container');
+    console.log(`Found ${containers.length} video containers`);
+    
+    containers.forEach((container, index) => {
+        const iframe = container.querySelector('iframe');
+        if (iframe) {
+            console.log(`Container ${index} has iframe:`, {
+                containerWidth: container.offsetWidth,
+                containerHeight: container.offsetHeight,
+                iframeWidth: iframe.offsetWidth,
+                iframeHeight: iframe.offsetHeight,
+                aspectRatio: container.offsetWidth / container.offsetHeight,
+                src: iframe.src
+            });
+        } else {
+            console.log(`Container ${index} has no iframe, just placeholder`);
+        }
+    });
+}
+
+// Call this after videos are loaded
+setTimeout(inspectVideoContainers, 2000);
