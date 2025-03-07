@@ -122,11 +122,11 @@
         },
         {
             "number": 16,
-            "id": "PM0LnzSSsLE",
-            "title": "モーショングラフィックス 'nostalmic'",
+            "id": "ot8oo1Dvh_k",
+            "title": "モーショングラフィックス 'Glancent'",
             "company": "Isshin",
             "category": ["2D", "Texture"],
-            "length": "1m 31s"
+            "length": "20s"
         },
         {
             "number": 17,
@@ -143,6 +143,54 @@
             "company": "Apple",
             "category": ["Typography"],
             "length": "1m 15s"
+        },
+        {
+            "number": 19,
+            "id": "W6zhJcgfSSs",
+            "title": "The Trade Desk - Solimar (Montage)",
+            "company": "Ordinary Folk",
+            "category": ["Texture", "2D"],
+            "length": "48s"
+        },
+        {
+            "number": 20,
+            "id": "_ZMSEffThOY",
+            "title": "Grommet - Online Advert",
+            "company": "Buff",
+            "category": ["Typography", "2D", "UI"],
+            "length": "30s"
+        },
+        {
+            "number": 21,
+            "id": "BkhaV46HM2E",
+            "title": "Introducing Microsoft Loop",
+            "company": "Microsoft",
+            "category": ["3D", "UI"],
+            "length": "1m"
+        },
+        {
+            "number": 22,
+            "id": "6-wuexGihME",
+            "title": "[motion graphics] Change",
+            "company": "aflow",
+            "category": ["2D"],
+            "length": "18s"
+        },
+        {
+            "number": 23,
+            "id": "w7IZBsgi4FY",
+            "title": "Wonderful tools",
+            "company": "Apple",
+            "category": ["2D", "Faux 3D"],
+            "length": "1m 46s"
+        },
+        {
+            "number": 24,
+            "id": "gUUDNIXJJ6c",
+            "title": "Google / IO",
+            "company": "Modicum",
+            "category": ["Faux 3D", "UI"],
+            "length": "1m 16s"
         }
     ]
 }
