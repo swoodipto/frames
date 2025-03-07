@@ -196,13 +196,12 @@
   }
 
   .filter-btn {
-    padding: 8px 20px;
+    padding: 4px 14px 10px 20px;
     margin: 0 6px;
     border: none;
     border-radius: var(--border-radius-round);
     background-color: var(--primary-light-300);
     cursor: pointer;
-    transition: background-color 0.3s;
     margin-bottom: 8px;
     font-size: var(--font-20);
     font-weight: var(--font-20-weight);
@@ -210,9 +209,23 @@
     letter-spacing: var(--font-20-letter-spacing);
     color: var(--primary-dark-200);
     text-transform: var(--brand-casing);
+    position: relative;
+  }
+
+  .filter-btn sup {
+    font-size: 0.6em;
+    margin-left: 4px;
+    color: var(--primary-dark-300);
+    font-weight: normal;
+    vertical-align: super;
   }
 
   .filter-btn.active {
+    background-color: var(--accent);
+    color: var(--primary-light);
+  }
+
+  .filter-btn.active sup {
     background-color: var(--accent);
     color: var(--primary-light);
   }
@@ -229,7 +242,7 @@
     letter-spacing: var(--font-12-letter-spacing);
     color: var(--primary-dark-200);
     margin-top: -28px;
-    margin-left: 100px;
+    margin-left: 108px;
   }
 
   .filter-helper span {
@@ -529,7 +542,7 @@
   }
 
   .suggested-videos-title div:first-child {
-    color: var(--primary-dark-300);
+    color: var(--primary-dark-100);
   }
 
   .suggested-videos-grid {
