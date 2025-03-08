@@ -620,3 +620,33 @@
   .load-more-btn:hover {
     background-color: var(--primary-light-400);
   }
+
+  .modal-nav-btn.animating {
+    position: relative;
+    overflow: visible;
+    color: var(--primary-light);
+  }
+
+  .modal-nav-btn.animating svg {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    pointer-events: none;
+  }
+
+  .modal-nav-btn.animating svg rect {
+    fill: none;
+    stroke: var(--primary-light);
+    stroke-width: 2px;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawStroke 5s linear forwards;
+  }
+
+  @keyframes drawStroke {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }

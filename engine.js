@@ -588,7 +588,99 @@ function onPlayerStateChange(event) {
         if (event.data === YT.PlayerState.PAUSED && !pausedByScrolling) {
             pausedByScrolling = false;
         }
+        
+        // If video ended, start the next button animation
+        if (event.data === YT.PlayerState.ENDED) {
+            triggerNextButtonAnimation();
+        }
     }
+}
+
+// Add this function to handle the next button animation and auto-navigation
+function triggerNextButtonAnimation() {
+    const nextButton = document.getElementById('nextButton');
+    
+    // Clear any existing animation
+    nextButton.classList.remove('animating');
+    
+    // Remove any existing SVG
+    const existingSvg = nextButton.querySelector('svg');
+    if (existingSvg) {
+        existingSvg.remove();
+    }
+    
+    // Create SVG for the border animation
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    
+    // Get button dimensions
+    const buttonWidth = nextButton.offsetWidth;
+    const buttonHeight = nextButton.offsetHeight;
+    
+    // Calculate perimeter (used for stroke-dasharray)
+    const perimeter = 2 * (buttonWidth + buttonHeight);
+    
+    // Set SVG attributes
+    svg.setAttribute('width', buttonWidth + 4);
+    svg.setAttribute('height', buttonHeight + 4);
+    
+    // Set rectangle attributes
+    rect.setAttribute('width', buttonWidth);
+    rect.setAttribute('height', buttonHeight);
+    rect.setAttribute('x', '2');
+    rect.setAttribute('y', '2');
+    rect.setAttribute('rx', buttonHeight / 2); // Match button's border-radius
+    
+    // Set the exact stroke-dasharray and stroke-dashoffset based on perimeter
+    rect.style.strokeDasharray = perimeter;
+    rect.style.strokeDashoffset = perimeter;
+    
+    // Set the animation duration inline to ensure it matches the timeout
+    rect.style.animation = 'drawStroke 5s linear forwards';
+    
+    // Append elements
+    svg.appendChild(rect);
+    nextButton.appendChild(svg);
+    
+    // Add the animation class
+    nextButton.classList.add('animating');
+    
+    // Store the animation start time
+    const animationStartTime = Date.now();
+    
+    // Set a timeout to navigate to the next video after exactly 5 seconds
+    const timeoutId = setTimeout(() => {
+        // Remove the animation class
+        nextButton.classList.remove('animating');
+        
+        // Remove the SVG
+        svg.remove();
+        
+        // Simulate a click on the next button
+        nextButton.click();
+    }, 5000);
+    
+    // Optional: Add a safety check to ensure the animation runs for exactly 5 seconds
+    const checkInterval = setInterval(() => {
+        const elapsed = Date.now() - animationStartTime;
+        
+        // If more than 5 seconds have passed but the timeout hasn't fired yet
+        if (elapsed >= 5000) {
+            clearInterval(checkInterval);
+            clearTimeout(timeoutId);
+            
+            // Remove the animation class
+            nextButton.classList.remove('animating');
+            
+            // Remove the SVG
+            if (svg.parentNode === nextButton) {
+                svg.remove();
+            }
+            
+            // Simulate a click on the next button
+            nextButton.click();
+        }
+    }, 100);
 }
 
 // Add YouTube API loading
