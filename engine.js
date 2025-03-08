@@ -623,6 +623,11 @@ function triggerNextButtonAnimation() {
     // Set SVG attributes
     svg.setAttribute('width', buttonWidth + 4);
     svg.setAttribute('height', buttonHeight + 4);
+    svg.style.position = 'absolute';
+    svg.style.top = '-2px';
+    svg.style.left = '-2px';
+    svg.style.pointerEvents = 'none';
+    svg.style.zIndex = '1';
     
     // Set rectangle attributes
     rect.setAttribute('width', buttonWidth);
@@ -634,13 +639,26 @@ function triggerNextButtonAnimation() {
     // Set the exact stroke-dasharray and stroke-dashoffset based on perimeter
     rect.style.strokeDasharray = perimeter;
     rect.style.strokeDashoffset = perimeter;
+    rect.style.fill = 'none';
+    rect.style.stroke = 'var(--primary-light)';
+    rect.style.strokeWidth = '2px';
     
     // Set the animation duration inline to ensure it matches the timeout
     rect.style.animation = 'drawStroke 5s linear forwards';
     
     // Append elements
     svg.appendChild(rect);
+    
+    // Store original button dimensions
+    const originalWidth = nextButton.offsetWidth;
+    const originalHeight = nextButton.offsetHeight;
+    
+    // Add the SVG to the button
     nextButton.appendChild(svg);
+    
+    // Ensure button dimensions don't change
+    nextButton.style.width = originalWidth + 'px';
+    nextButton.style.height = originalHeight + 'px';
     
     // Add the animation class
     nextButton.classList.add('animating');

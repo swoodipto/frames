@@ -639,7 +639,6 @@
   .modal-nav-btn.animating {
     position: relative;
     overflow: visible;
-    color: var(--primary-light);
   }
 
   .modal-nav-btn.animating svg {
@@ -649,6 +648,7 @@
     width: calc(100% + 4px);
     height: calc(100% + 4px);
     pointer-events: none;
+    z-index: 1;
   }
 
   .modal-nav-btn.animating svg rect {
@@ -669,16 +669,23 @@
   @media (max-width: 1170px) {
     .modal-video-player {
         position: relative;
+        width: 100% !important;
     }
     .modal-nav-btn {
         position: absolute;
         bottom: -52px;
+        z-index: 2;
     }
     .modal-nav-btn#prevButton {
         left: 0;
     }
     .modal-nav-btn#nextButton {
-        right: 0
+        right: 0;
+    }
+    .modal-nav-btn.animating {
+        position: absolute !important;
+        right: 0 !important;
+        bottom: -52px !important;
     }
     .modal-video-info {
       position: relative;
@@ -686,6 +693,10 @@
       gap: 60px;
       max-width: calc(100% - 200px);
   }
+  .modal-video-container {
+    width: 100% !important;
+    margin: 0 auto;
+}
   .modal-video-info {
       gap: 40px;
   }
