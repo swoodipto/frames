@@ -390,6 +390,7 @@
     padding: 4px 8px;
     background-color: var(--primary-light-300);
     border-radius: var(--border-radius-small);
+    white-space: nowrap;
   }
 
   /* Modal styles */
@@ -756,8 +757,11 @@
     .filter-btn:first-child {
       margin-right: 16px;
     }
+    .video-title-container{
+      max-width: 70%;
+    }
     .video-wrapper {
-        padding: 12px 16px;
+        padding: 12px;
     }
     .footer-gap {
       margin: 30px 0 0 0;
