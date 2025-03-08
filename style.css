@@ -177,7 +177,6 @@
   #header {
     display: flex;
     justify-content: space-between;
-    align-items: top;
   }
 
   .headline {
@@ -193,6 +192,10 @@
     padding: 0;
     text-align: left;
     margin-bottom: 0;
+    display: flex;
+    overflow-x: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   .filter-btn {
@@ -210,6 +213,7 @@
     color: var(--primary-dark-200);
     text-transform: var(--brand-casing);
     position: relative;
+    white-space: nowrap;
   }
 
   .filter-btn sup {
@@ -567,6 +571,13 @@
     background-color: var(--primary-dark-400);
   }
 
+  .footer-gap {
+    width: 100%;
+    height: 1px;
+    background-color: var(--primary-light-400);
+    margin: 120px 0 0 0;
+  }
+
   #footer {
       width: 100%;
       display: flex;
@@ -650,3 +661,48 @@
       stroke-dashoffset: 0;
     }
   }
+
+  @media (max-width: 768px) {    
+    #header {
+      flex-direction: column-reverse;
+    }
+    .headline span {
+      display: inline;
+    }
+    .footer-text {
+      flex-direction: column;
+      text-align: right;
+      font-size: var(--font-12);
+      letter-spacing: var(--font-12-letter-spacing);
+      line-height: var(--font-12-line-height);
+  }
+  .footer-text-2 {
+      position: relative;
+      margin-right: -4px;
+  }
+  #footer svg {
+      margin-top: 12px;
+  }
+  .footer-gap {
+    margin: 60px 0 0 0;
+  }
+  }
+
+  @media (max-width: 435px) {
+    :root {
+        --container-padding: 12px;
+        --video-grid: repeat(auto-fill, minmax(290px, 1fr));
+    }
+    .filter-btn:first-child {
+      margin-right: 16px;
+    }
+    .video-wrapper {
+        padding: 12px 16px;
+    }
+    .footer-gap {
+      margin: 30px 0 0 0;
+    }
+    .filter-helper{
+      margin-left: 0;
+    }
+}
