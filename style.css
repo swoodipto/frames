@@ -777,6 +777,9 @@
   .modal-video-info .modal-video-left {
       flex-direction: column;
   }
+  .filter-helper{
+    display: none;
+  }
 }
 
 @media (max-width: 420px) {
