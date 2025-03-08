@@ -338,13 +338,18 @@ function updateModalVideo() {
     playerDiv.id = 'youtube-player';
     modalVideoContainer.appendChild(playerDiv);
     
-    // Initialize YouTube player
+    // Initialize YouTube player with rel=0 and other parameters
     player = new YT.Player('youtube-player', {
         videoId: currentVideo.id,
         playerVars: {
             'autoplay': 1,
             'modestbranding': 1,
-            'rel': 0
+            'rel': 0,            // This disables related videos
+            'showinfo': 0,       // Hides video info
+            'controls': 1,
+            'fs': 1,            // Allows fullscreen
+            'iv_load_policy': 3, // Hides video annotations
+            'enablejsapi': 1     // Enables JavaScript API
         },
         events: {
             'onStateChange': onPlayerStateChange
@@ -683,18 +688,15 @@ function createVideoObserver(container) {
 
 // Function to load a video
 function loadVideo(container, videoId) {
-    // Create iframe with proper loop parameters
+    // Create iframe with rel=0 and other parameters
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.youtube.com/embed/${videoId}?mute=1&controls=0&rel=0&autoplay=1&loop=1&playlist=${videoId}&showinfo=0&cc_load_policy=0&modestbranding=1&vq=small&iv_load_policy=3&fs=0&disablekb=1&playsinline=1`;
-    
-    // Note: For looping to work, we need both loop=1 AND playlist=${videoId}
-    // The playlist parameter is required for looping to work, even for a single video
     
     iframe.title = "YouTube video player";
     iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
     iframe.loading = "lazy";
     
-    // Apply inline styles to force proper positioning and aspect ratio
+    // Apply inline styles
     iframe.style.position = 'absolute';
     iframe.style.top = '0';
     iframe.style.left = '0';
