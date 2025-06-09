@@ -287,6 +287,102 @@
             "company": "Coloso - 콜로소",
             "category": ["2D", "3D", "Faux 3D"],
             "length": "17s"
+        },
+        {
+            "number": 37,
+            "id": "6YD25EoV5Oo",
+            "title": "Google Material 3 Expressive — Data's New Language",
+            "company": "Scene",
+            "category": ["2D", "UI"],
+            "length": "50s"
+        },
+        {
+            "number": 38,
+            "id": "aSte18D2_YE",
+            "title": "NeuraFlow",
+            "company": "Zelios",
+            "category": ["2D", "Faux 3D", "UI"],
+            "length": "20s"
+        },
+        {
+            "number": 39,
+            "id": "xDwR1_vrIg8",
+            "title": "Lovable 2.0",
+            "company": "Lovable",
+            "category": ["2D", "UI"],
+            "length": "1m 20s"
+        },
+        {
+            "number": 40,
+            "id": "qbqZQFOVfA8",
+            "title": "Introducing AI Mode",
+            "company": "Google",
+            "category": ["2D", "UI"],
+            "length": "1m 37s"
+        },
+        {
+            "number": 41,
+            "id": "vR5ikhZBN28",
+            "title": "모션그래픽 기말 과제",
+            "company": "신시아가",
+            "category": ["2D", "Texture"],
+            "length": "20s"
+        },
+        {
+            "number": 42,
+            "id": "_PY225B9RHQ",
+            "title": "Determ Brand Reveal",
+            "company": "Determ",
+            "category": ["2D", "Typography"],
+            "length": "31s"
+        },
+        {
+            "number": 43,
+            "id": "vcFaX4hTlxw",
+            "title": "eau",
+            "company": "Nanatsu",
+            "category": ["2D", "Texture", "Faux 3D", "3D"],
+            "length": "1m"
+        },
+        {
+            "number": 44,
+            "id": "k7OykKPKRgA",
+            "title": "Showreel 2023",
+            "company": "poproboval",
+            "category": ["3D"],
+            "length": "31s"
+        },
+        {
+            "number": 45,
+            "id": "WwgiSBfh02U",
+            "title": "Point of shape",
+            "company": "BONG",
+            "category": ["2D", "Faux 3D"],
+            "length": "40s"
+        },
+        {
+            "number": 46,
+            "id": "pAzJPmsWgKU",
+            "title": "Essential Space",
+            "company": "Nothing",
+            "category": ["Typography", "3D", "UI", "2D"],
+            "length": "1m 26s"
+        },
+        {
+            "number": 47,
+            "id": "gUUDNIXJJ6c",
+            "title": "Google / IO",
+            "company": "Modicum",
+            "category": ["2D", "UI", "Faux 3D"],
+            "length": "1m 16s"
+        },
+        {
+            "number": 48,
+            "id": "WOBmXkYtFrs",
+            "title": "DAVID 10th anniversary",
+            "company": "David The Agency",
+            "category": ["2D", "Typography"],
+            "length": "2m 01s"
         }
     ]
 }
