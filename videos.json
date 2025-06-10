@@ -354,14 +354,6 @@
         },
         {
             "number": 45,
-            "id": "WwgiSBfh02U",
-            "title": "Point of shape",
-            "company": "BONG",
-            "category": ["2D", "Faux 3D"],
-            "length": "40s"
-        },
-        {
-            "number": 46,
             "id": "pAzJPmsWgKU",
             "title": "Essential Space",
             "company": "Nothing",
@@ -369,15 +361,7 @@
             "length": "1m 26s"
         },
         {
-            "number": 47,
-            "id": "gUUDNIXJJ6c",
-            "title": "Google / IO",
-            "company": "Modicum",
-            "category": ["2D", "UI", "Faux 3D"],
-            "length": "1m 16s"
-        },
-        {
-            "number": 48,
+            "number": 46,
             "id": "WOBmXkYtFrs",
             "title": "DAVID 10th anniversary",
             "company": "David The Agency",
