@@ -88,14 +88,19 @@ async function loadVideos() {
         // Check for filter parameters in URL and apply them
         const urlFilters = getUrlFilters();
         if (urlFilters.length > 0) {
+            // Deactivate the "All" button first
+            const allButton = document.querySelector('[data-category="all"]');
+            allButton.classList.remove('active');
+            
+            // Activate the filter buttons based on URL parameters
             urlFilters.forEach(category => {
                 const button = document.querySelector(`.filter-btn[data-category="${category}"]`);
                 if (button) {
                     button.classList.add('active');
-                    allButton.classList.remove('active');
                 }
             });
             
+            // Filter videos based on URL parameters
             const filteredVideos = videoData.filter(video => 
                 urlFilters.every(cat => video.category.includes(cat))
             );
