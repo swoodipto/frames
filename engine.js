@@ -45,53 +45,53 @@ async function loadVideos() {
 
         // Get unique categories (excluding 'All')
         const categories = [...new Set(videoData.flatMap(video => video.category))];
-        
+
         // Create filter buttons - ONLY if they don't already exist
         const filterContainer = document.getElementById('filterContainer');
-        
+
         // Clear existing filters first to prevent duplicates
         if (filterContainer.children.length === 0) {
             // Create "All" button
             const allButton = document.createElement('button');
             allButton.className = 'filter-btn active';
             allButton.textContent = 'All';
-            
+
             // Add count for all videos
             const allCount = document.createElement('sup');
             allCount.textContent = videoData.length;
             allButton.appendChild(allCount);
-            
+
             allButton.setAttribute('data-category', 'all');
             allButton.addEventListener('click', (event) => filterVideos('all', videoData, event));
             filterContainer.appendChild(allButton);
-            
+
             // Create category filter buttons
             categories.forEach(category => {
                 // Count videos in this category
                 const categoryCount = videoData.filter(video => video.category.includes(category)).length;
-                
+
                 const button = document.createElement('button');
                 button.className = 'filter-btn';
                 button.textContent = category;
-                
+
                 // Add count as superscript
                 const count = document.createElement('sup');
                 count.textContent = categoryCount;
                 button.appendChild(count);
-                
+
                 button.setAttribute('data-category', category);
                 button.addEventListener('click', (event) => filterVideos(category, videoData, event));
                 filterContainer.appendChild(button);
             });
         }
-        
+
         // Check for filter parameters in URL and apply them
         const urlFilters = getUrlFilters();
         if (urlFilters.length > 0) {
             // Deactivate the "All" button first
             const allButton = document.querySelector('[data-category="all"]');
             allButton.classList.remove('active');
-            
+
             // Activate the filter buttons based on URL parameters
             urlFilters.forEach(category => {
                 const button = document.querySelector(`.filter-btn[data-category="${category}"]`);
@@ -99,9 +99,9 @@ async function loadVideos() {
                     button.classList.add('active');
                 }
             });
-            
+
             // Filter videos based on URL parameters
-            const filteredVideos = videoData.filter(video => 
+            const filteredVideos = videoData.filter(video =>
                 urlFilters.every(cat => video.category.includes(cat))
             );
             displayVideos(filteredVideos);
@@ -128,17 +128,17 @@ function getUrlFilters() {
 function updateUrlFilters(activeFilters) {
     const urlParams = new URLSearchParams(window.location.search);
     if (activeFilters.length > 0) {
-    urlParams.set('filters', activeFilters.join(','));
+        urlParams.set('filters', activeFilters.join(','));
     } else {
-    urlParams.delete('filters');
+        urlParams.delete('filters');
     }
-    
+
     // Preserve the frame parameter if it exists
     const frameParam = urlParams.get('frame');
-    const newUrl = frameParam 
-    ? `?${urlParams.toString()}`
-    : activeFilters.length > 0 ? `?${urlParams.toString()}` : window.location.pathname;
-    
+    const newUrl = frameParam
+        ? `?${urlParams.toString()}`
+        : activeFilters.length > 0 ? `?${urlParams.toString()}` : window.location.pathname;
+
     window.history.replaceState({}, '', newUrl);
 }
 
@@ -146,43 +146,43 @@ function updateUrlFilters(activeFilters) {
 function filterVideos(category, videos, event) {
     const buttons = document.querySelectorAll('.filter-btn');
     const allButton = document.querySelector('[data-category="all"]');
-    
+
     // Reset pagination when filters change
     currentPage = 1;
     hasMoreVideos = true;
-    
+
     // If "All" is clicked, deactivate all other buttons
     if (category === 'all') {
-    buttons.forEach(btn => btn.classList.remove('active'));
-    allButton.classList.add('active');
-    displayVideos(videos);
-    updateUrlFilters([]);
-    return;
+        buttons.forEach(btn => btn.classList.remove('active'));
+        allButton.classList.add('active');
+        displayVideos(videos);
+        updateUrlFilters([]);
+        return;
     }
-    
+
     // If shift is not held, deactivate all buttons except the clicked one
     if (!event.shiftKey) {
-    buttons.forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-    allButton.classList.remove('active');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        allButton.classList.remove('active');
     } else {
-    // Toggle the clicked button
-    event.target.classList.toggle('active');
-    allButton.classList.remove('active');
+        // Toggle the clicked button
+        event.target.classList.toggle('active');
+        allButton.classList.remove('active');
     }
 
     // Get all active categories
     const activeCategories = Array.from(buttons)
-    .filter(btn => btn.classList.contains('active'))
-    .map(btn => btn.getAttribute('data-category'));
+        .filter(btn => btn.classList.contains('active'))
+        .map(btn => btn.getAttribute('data-category'));
 
     // Update URL with current filters
     updateUrlFilters(activeCategories);
 
     // Filter videos that match ALL of the selected categories (AND logic)
     const filteredVideos = activeCategories.length > 0
-    ? videos.filter(video => activeCategories.every(cat => video.category.includes(cat)))
-    : videos;
+        ? videos.filter(video => activeCategories.every(cat => video.category.includes(cat)))
+        : videos;
 
     displayVideos(filteredVideos, false);
 }
@@ -192,27 +192,27 @@ let currentVideoIndex = 0;
 async function openModal(videoId) {
     console.log('Opening modal for video:', videoId);
     pausedByScrolling = false;
-    
+
     if (player) {
         player.destroy(); // Clean up previous player
     }
-    
+
     const modal = document.getElementById('videoModal');
-    
+
     // Store scroll position and detach main content
     mainContentState.scrollPosition = window.scrollY;
-    
+
     // Find and store main content - specifically the video gallery
     const mainContent = document.querySelector('.video-grid');
     if (mainContent) {
         console.log('Found video grid, preparing to detach');
         mainContentState.content = mainContent;
-        
+
         // Create placeholder to maintain document height
         const placeholder = document.createElement('div');
         placeholder.style.height = `${mainContent.offsetHeight}px`;
         placeholder.id = 'main-content-placeholder';
-        
+
         // Clean up video resources before detaching
         mainContent.querySelectorAll('.video-container iframe').forEach(iframe => {
             const wrapper = iframe.closest('.video-wrapper');
@@ -224,38 +224,38 @@ async function openModal(videoId) {
                 }
             }
         });
-        
+
         // Disconnect all observers
         videoObservers.forEach(observer => observer.disconnect());
         videoObservers.clear();
-        
+
         // Replace main content with placeholder
         mainContent.parentNode.replaceChild(placeholder, mainContent);
         console.log('Video grid detached and replaced with placeholder');
     } else {
         console.warn('Video grid not found');
     }
-    
+
     // Find the video data by ID
     currentVideoIndex = videoData.findIndex(video => video.id === videoId);
-    
+
     // If video not found in videoData, default to first video
     if (currentVideoIndex === -1) {
         currentVideoIndex = 0;
         console.error("Video ID not found:", videoId);
     }
-    
+
     updateModalVideo();
     modal.style.display = 'flex';
     window.scrollTo(0, 0);
     modal.scrollTo(0, 0);
-    
+
     // Prevent body scrolling while modal is open
     document.body.style.overflow = 'hidden';
-    
+
     setupModalScrollHandler();
     document.addEventListener('keydown', handleKeyPress);
-    
+
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('frame', videoId);
     window.history.replaceState({}, '', `?${urlParams.toString()}`);
@@ -270,38 +270,38 @@ function closeModal() {
     const modalVideoContainer = document.getElementById('modalVideoContainer');
     modal.style.display = 'none';
     modalVideoContainer.innerHTML = '';
-    
+
     // Restore main content
     const placeholder = document.getElementById('main-content-placeholder');
     if (placeholder && mainContentState.content) {
         console.log('Found placeholder and stored content, restoring video grid');
         // Restore the main content
         placeholder.parentNode.replaceChild(mainContentState.content, placeholder);
-        
+
         // Restore scroll position
         window.scrollTo({
             top: mainContentState.scrollPosition,
             behavior: 'auto' // Use auto to prevent smooth scrolling
         });
-        
+
         // Re-initialize video observers for visible videos
         initializeVideoObservers();
-        
+
         // Clear the stored content reference
         mainContentState.content = null;
         console.log('Video grid restored and observers reinitialized');
     } else {
         console.warn('Placeholder or stored content not found');
     }
-    
+
     // Re-enable body scrolling
     document.body.style.overflow = '';
-    
+
     document.removeEventListener('keydown', handleKeyPress);
-    
+
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.delete('frame');
-    
+
     const remainingParams = urlParams.toString();
     const newUrl = remainingParams ? `?${remainingParams}` : window.location.pathname;
     window.history.replaceState({}, '', newUrl);
@@ -322,27 +322,27 @@ function navigateVideo(direction) {
     // Navigate through the videoData array instead of DOM elements
     currentVideoIndex = (currentVideoIndex + direction + videoData.length) % videoData.length;
     const videoId = videoData[currentVideoIndex].id;
-    
+
     // Update URL preserving filter parameters
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('frame', videoId);
     window.history.replaceState({}, '', `?${urlParams.toString()}`);
-    
+
     updateModalVideo();
 }
 // Function to update modal video
 function updateModalVideo() {
     const modalVideoContainer = document.getElementById('modalVideoContainer');
     const currentVideo = videoData[currentVideoIndex];
-    
+
     // Clear previous video
     modalVideoContainer.innerHTML = '';
-    
+
     // Create new player
     const playerDiv = document.createElement('div');
     playerDiv.id = 'youtube-player';
     modalVideoContainer.appendChild(playerDiv);
-    
+
     // Initialize YouTube player with rel=0 and other parameters
     player = new YT.Player('youtube-player', {
         videoId: currentVideo.id,
@@ -360,12 +360,12 @@ function updateModalVideo() {
             'onStateChange': onPlayerStateChange
         }
     });
-    
+
     // Update video info
     document.querySelector('.modal-video-number').textContent = formatProjectNumber(currentVideo.number);
     document.querySelector('.modal-video-title').textContent = currentVideo.title;
     document.querySelector('.modal-video-company').textContent = currentVideo.company;
-    
+
     // Update suggested videos
     updateSuggestedVideos(currentVideo.id);
 }
@@ -373,38 +373,38 @@ function updateModalVideo() {
 function updateSuggestedVideos(currentVideoId) {
     const suggestedVideosContainer = document.getElementById('suggestedVideos');
     suggestedVideosContainer.innerHTML = '';
-    
+
     // Get active filters
     const activeFilters = Array.from(document.querySelectorAll('.filter-btn.active'))
-    .map(btn => btn.getAttribute('data-category'))
-    .filter(cat => cat !== 'all'); // Exclude 'all' from filters
-    
+        .map(btn => btn.getAttribute('data-category'))
+        .filter(cat => cat !== 'all'); // Exclude 'all' from filters
+
     // Filter videos based on active filters and current video
     let suggestedVideos = videoData
-    .filter(video => video.id !== currentVideoId);
-    
+        .filter(video => video.id !== currentVideoId);
+
     // Apply category filters if active
     if (activeFilters.length > 0) {
-    suggestedVideos = suggestedVideos.filter(video => 
-        activeFilters.every(filter => video.category.includes(filter))
-    );
+        suggestedVideos = suggestedVideos.filter(video =>
+            activeFilters.every(filter => video.category.includes(filter))
+        );
     }
-    
+
     // Shuffle and limit to 6 videos
     suggestedVideos = suggestedVideos
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 6);
-    
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 6);
+
     // Create suggested video elements
     suggestedVideos.forEach(video => {
-    const videoWrapper = createVideoElement(video);
-    videoWrapper.onclick = () => {
-        openModal(video.id);
-        window.scrollTo(0, 0);
-    };
-    suggestedVideosContainer.appendChild(videoWrapper);
+        const videoWrapper = createVideoElement(video);
+        videoWrapper.onclick = () => {
+            openModal(video.id);
+            window.scrollTo(0, 0);
+        };
+        suggestedVideosContainer.appendChild(videoWrapper);
     });
-    
+
     // Initialize observers for suggested videos
     initializeVideoObservers();
 }
@@ -413,22 +413,22 @@ function createVideoElement(video) {
     const videoWrapper = document.createElement('div');
     videoWrapper.className = 'video-wrapper';
     videoWrapper.dataset.videoId = video.id;
-    
+
     // Create top info section
     const videoInfoTop = document.createElement('div');
     videoInfoTop.className = 'video-info-top';
-    
+
     const numberSpan = document.createElement('span');
     numberSpan.className = 'video-number';
     numberSpan.textContent = formatProjectNumber(video.number);
-    
+
     const companySpan = document.createElement('span');
     companySpan.className = 'video-company';
     companySpan.textContent = video.company;
-    
+
     videoInfoTop.appendChild(numberSpan);
     videoInfoTop.appendChild(companySpan);
-    
+
     // Create video container with fixed aspect ratio
     const videoContainer = document.createElement('div');
     videoContainer.className = 'video-container';
@@ -439,7 +439,7 @@ function createVideoElement(video) {
     videoContainer.style.backgroundColor = 'var(--primary-dark-400)';
     videoContainer.style.borderRadius = 'var(--border-radius-small)';
     videoContainer.style.overflow = 'hidden';
-    
+
     // Create placeholder with proper positioning
     const placeholder = document.createElement('div');
     placeholder.className = 'video-placeholder';
@@ -451,92 +451,92 @@ function createVideoElement(video) {
     placeholder.style.backgroundSize = 'cover';
     placeholder.style.backgroundPosition = 'center';
     placeholder.style.backgroundImage = `url(https://img.youtube.com/vi/${video.id}/mqdefault.jpg)`;
-    
+
     videoContainer.appendChild(placeholder);
-    
+
     // Create bottom info section
     const videoInfoBottom = document.createElement('div');
     videoInfoBottom.className = 'video-info-bottom';
-    
+
     const titleContainer = document.createElement('div');
     titleContainer.className = 'video-title-container';
-    
+
     const titleSpan = document.createElement('span');
     titleSpan.className = 'video-title';
     titleSpan.textContent = video.title;
-    
+
     const lengthContainer = document.createElement('div');
     lengthContainer.className = 'video-length-container';
-    
+
     const lengthSpan = document.createElement('span');
     lengthSpan.className = 'video-length';
     lengthSpan.textContent = video.length;
-    
+
     // Assemble the elements
     titleContainer.appendChild(titleSpan);
     lengthContainer.appendChild(lengthSpan);
     videoInfoBottom.appendChild(titleContainer);
     videoInfoBottom.appendChild(lengthContainer);
-    
+
     videoWrapper.appendChild(videoInfoTop);
     videoWrapper.appendChild(videoContainer);
     videoWrapper.appendChild(videoInfoBottom);
-    
+
     return videoWrapper;
 }
 // Handle keyboard navigation
 function handleKeyPress(event) {
     switch (event.key) {
-    case 'ArrowLeft':
-        navigateVideo(-1);
-        break;
-    case 'ArrowRight':
-        navigateVideo(1);
-        break;
-    case 'Escape':
-        closeModal();
-        break;
+        case 'ArrowLeft':
+            navigateVideo(-1);
+            break;
+        case 'ArrowRight':
+            navigateVideo(1);
+            break;
+        case 'Escape':
+            closeModal();
+            break;
     }
 }
 // Function to display videos
 function displayVideos(videos, loadMore = false) {
     const videoGallery = document.getElementById('videoGallery');
-    
+
     // Clear gallery if not loading more
     if (!loadMore) {
-    videoGallery.innerHTML = '';
+        videoGallery.innerHTML = '';
     }
-    
+
     // Sort videos in descending order by number (newest first)
     const sortedVideos = [...videos].sort((a, b) => b.number - a.number);
-    
+
     // Get the slice of videos to display
     const startIndex = (currentPage - 1) * videosPerPage;
     const endIndex = startIndex + videosPerPage;
     const videosToShow = sortedVideos.slice(startIndex, endIndex);
-    
+
     // Display the videos
     videosToShow.forEach(video => {
-    const videoWrapper = createVideoElement(video);
-    videoWrapper.onclick = () => {
-        openModal(video.id);
-    };
-    videoGallery.appendChild(videoWrapper);
+        const videoWrapper = createVideoElement(video);
+        videoWrapper.onclick = () => {
+            openModal(video.id);
+        };
+        videoGallery.appendChild(videoWrapper);
     });
-    
+
     // Check if there are more videos
     hasMoreVideos = endIndex < sortedVideos.length;
-    
+
     // Add or update "Load More" button
     updateLoadMoreButton(sortedVideos);
-    
+
     // Initialize observers for new videos
     initializeVideoObservers();
 }
 // Close modal when clicking outside the video or on close button
 document.getElementById('videoModal').addEventListener('click', (e) => {
     if (e.target.id === 'videoModal' || e.target.classList.contains('modal-close')) {
-    closeModal();
+        closeModal();
     }
 });
 // Load videos when the page is ready
@@ -561,26 +561,26 @@ function updateLoadMoreButton(videos) {
     // Remove existing button if it exists
     const existingButton = document.querySelector('.load-more-btn');
     if (existingButton) {
-    existingButton.remove();
+        existingButton.remove();
     }
-    
+
     // Add new button if there are more videos
     if (hasMoreVideos) {
-    const loadMoreBtn = document.createElement('button');
-    loadMoreBtn.className = 'load-more-btn';
-    loadMoreBtn.textContent = 'spoil me with more';
-    loadMoreBtn.onclick = () => {
-        currentPage++;
-        displayVideos(videos, true);
-    };
-    document.getElementById('videoGallery').after(loadMoreBtn);
+        const loadMoreBtn = document.createElement('button');
+        loadMoreBtn.className = 'load-more-btn';
+        loadMoreBtn.textContent = 'spoil me with more';
+        loadMoreBtn.onclick = () => {
+            currentPage++;
+            displayVideos(videos, true);
+        };
+        document.getElementById('videoGallery').after(loadMoreBtn);
     }
 }
 
 // Add function to handle player state changes
 function onPlayerStateChange(event) {
     const suggestedVideosSection = document.querySelector('.suggested-videos-section');
-    
+
     if (event.data === YT.PlayerState.PLAYING) {
         // Video is playing, reduce opacity
         suggestedVideosSection.style.opacity = '0.3';
@@ -588,12 +588,12 @@ function onPlayerStateChange(event) {
     } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
         // Video is paused or ended, restore opacity
         suggestedVideosSection.style.opacity = '1';
-        
+
         // If paused by user (not by scrolling), reset the flag
         if (event.data === YT.PlayerState.PAUSED && !pausedByScrolling) {
             pausedByScrolling = false;
         }
-        
+
         // If video ended, start the next button animation
         if (event.data === YT.PlayerState.ENDED) {
             triggerNextButtonAnimation();
@@ -604,27 +604,27 @@ function onPlayerStateChange(event) {
 // Add this function to handle the next button animation and auto-navigation
 function triggerNextButtonAnimation() {
     const nextButton = document.getElementById('nextButton');
-    
+
     // Clear any existing animation
     nextButton.classList.remove('animating');
-    
+
     // Remove any existing SVG
     const existingSvg = nextButton.querySelector('svg');
     if (existingSvg) {
         existingSvg.remove();
     }
-    
+
     // Create SVG for the border animation
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    
+
     // Get button dimensions
     const buttonWidth = nextButton.offsetWidth;
     const buttonHeight = nextButton.offsetHeight;
-    
+
     // Calculate perimeter (used for stroke-dasharray)
     const perimeter = 2 * (buttonWidth + buttonHeight);
-    
+
     // Set SVG attributes
     svg.setAttribute('width', buttonWidth + 4);
     svg.setAttribute('height', buttonHeight + 4);
@@ -633,73 +633,73 @@ function triggerNextButtonAnimation() {
     svg.style.left = '-2px';
     svg.style.pointerEvents = 'none';
     svg.style.zIndex = '1';
-    
+
     // Set rectangle attributes
     rect.setAttribute('width', buttonWidth);
     rect.setAttribute('height', buttonHeight);
     rect.setAttribute('x', '2');
     rect.setAttribute('y', '2');
     rect.setAttribute('rx', buttonHeight / 2); // Match button's border-radius
-    
+
     // Set the exact stroke-dasharray and stroke-dashoffset based on perimeter
     rect.style.strokeDasharray = perimeter;
     rect.style.strokeDashoffset = perimeter;
     rect.style.fill = 'none';
     rect.style.stroke = 'var(--primary-light)';
     rect.style.strokeWidth = '2px';
-    
+
     // Set the animation duration inline to ensure it matches the timeout
     rect.style.animation = 'drawStroke 5s linear forwards';
-    
+
     // Append elements
     svg.appendChild(rect);
-    
+
     // Store original button dimensions
     const originalWidth = nextButton.offsetWidth;
     const originalHeight = nextButton.offsetHeight;
-    
+
     // Add the SVG to the button
     nextButton.appendChild(svg);
-    
+
     // Ensure button dimensions don't change
     nextButton.style.width = originalWidth + 'px';
     nextButton.style.height = originalHeight + 'px';
-    
+
     // Add the animation class
     nextButton.classList.add('animating');
-    
+
     // Store the animation start time
     const animationStartTime = Date.now();
-    
+
     // Set a timeout to navigate to the next video after exactly 5 seconds
     const timeoutId = setTimeout(() => {
         // Remove the animation class
         nextButton.classList.remove('animating');
-        
+
         // Remove the SVG
         svg.remove();
-        
+
         // Simulate a click on the next button
         nextButton.click();
     }, 5000);
-    
+
     // Optional: Add a safety check to ensure the animation runs for exactly 5 seconds
     const checkInterval = setInterval(() => {
         const elapsed = Date.now() - animationStartTime;
-        
+
         // If more than 5 seconds have passed but the timeout hasn't fired yet
         if (elapsed >= 5000) {
             clearInterval(checkInterval);
             clearTimeout(timeoutId);
-            
+
             // Remove the animation class
             nextButton.classList.remove('animating');
-            
+
             // Remove the SVG
             if (svg.parentNode === nextButton) {
                 svg.remove();
             }
-            
+
             // Simulate a click on the next button
             nextButton.click();
         }
@@ -715,7 +715,7 @@ function loadYouTubeAPI() {
 }
 
 // Add this function to handle YouTube API ready state
-window.onYouTubeIframeAPIReady = function() {
+window.onYouTubeIframeAPIReady = function () {
     // YouTube API is ready
     console.log('YouTube API Ready');
 };
@@ -724,28 +724,28 @@ window.onYouTubeIframeAPIReady = function() {
 function setupModalScrollHandler() {
     const modal = document.getElementById('videoModal');
     const videoContainer = document.querySelector('.modal-video-player');
-    
-    modal.addEventListener('scroll', function() {
+
+    modal.addEventListener('scroll', function () {
         if (!player) return;
-        
+
         // Get the position of the video container relative to the viewport
         const rect = videoContainer.getBoundingClientRect();
         const videoHeight = rect.height;
-        
+
         // Calculate how much of the video is still visible (as a percentage)
-        const visiblePercentage = Math.max(0, Math.min(100, 
+        const visiblePercentage = Math.max(0, Math.min(100,
             (rect.bottom / videoHeight) * 100
         ));
-        
+
         // If less than 75% of the video is visible, pause it
         if (visiblePercentage < 75 && player.getPlayerState() === YT.PlayerState.PLAYING) {
             player.pauseVideo();
             pausedByScrolling = true; // Mark that we paused by scrolling
-        } 
+        }
         // If more than 75% of the video is visible and it was paused by scrolling, resume it
-        else if (visiblePercentage >= 75 && 
-                 pausedByScrolling && 
-                 player.getPlayerState() === YT.PlayerState.PAUSED) {
+        else if (visiblePercentage >= 75 &&
+            pausedByScrolling &&
+            player.getPlayerState() === YT.PlayerState.PAUSED) {
             player.playVideo();
             pausedByScrolling = false; // Reset the flag
         }
@@ -757,7 +757,7 @@ function initializeVideoObservers() {
     // Disconnect any existing observers
     videoObservers.forEach(observer => observer.disconnect());
     videoObservers.clear();
-    
+
     // Create new observers for all videos
     document.querySelectorAll('.video-container').forEach(container => {
         const observer = createVideoObserver(container);
@@ -775,10 +775,10 @@ function createVideoObserver(container) {
         entries.forEach(entry => {
             const wrapper = entry.target.closest('.video-wrapper');
             if (!wrapper) return;
-            
+
             const videoId = wrapper.dataset.videoId;
             if (!videoId) return;
-            
+
             // Add a small threshold to prevent rapid loading/unloading at viewport edges
             if (entry.isIntersecting && entry.intersectionRatio > 0.2) {
                 // Video is visible in viewport - load if not already loaded
@@ -806,11 +806,11 @@ function loadVideo(container, videoId) {
     // Create iframe with rel=0 and other parameters
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.youtube.com/embed/${videoId}?mute=1&controls=0&rel=0&autoplay=1&loop=1&playlist=${videoId}&showinfo=0&cc_load_policy=0&modestbranding=1&vq=small&iv_load_policy=3&fs=0&disablekb=1&playsinline=1`;
-    
+
     iframe.title = "YouTube video player";
     iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
     iframe.loading = "lazy";
-    
+
     // Apply inline styles
     iframe.style.position = 'absolute';
     iframe.style.top = '0';
@@ -819,7 +819,7 @@ function loadVideo(container, videoId) {
     iframe.style.height = '100%';
     iframe.style.border = 'none';
     iframe.style.borderRadius = 'var(--border-radius-small)';
-    
+
     container.appendChild(iframe);
 }
 
@@ -828,10 +828,10 @@ function unloadVideo(container, videoId) {
     // Find the iframe
     const iframe = container.querySelector('iframe');
     if (!iframe) return;
-    
+
     // Check if placeholder already exists
     let placeholder = container.querySelector('.video-placeholder');
-    
+
     if (!placeholder) {
         // Create placeholder with video thumbnail
         placeholder = document.createElement('div');
@@ -842,7 +842,7 @@ function unloadVideo(container, videoId) {
         // Make existing placeholder visible again
         placeholder.style.opacity = '1';
     }
-    
+
     // Remove the iframe after a short delay to prevent layout shift
     setTimeout(() => {
         if (iframe && iframe.parentNode) {
@@ -858,7 +858,7 @@ function addPlaceholderStyles() {
     if (existingStyle) {
         existingStyle.remove();
     }
-    
+
     const style = document.createElement('style');
     style.id = 'placeholder-styles';
     style.textContent = `
@@ -925,9 +925,9 @@ window.addEventListener('scroll', debounce(() => {
 // Helper function for debouncing
 function debounce(func, wait, immediate = false) {
     let timeout;
-    return function(...args) {
+    return function (...args) {
         const context = this;
-        const later = function() {
+        const later = function () {
             timeout = null;
             if (!immediate) func.apply(context, args);
         };
@@ -947,7 +947,7 @@ function updateLoadMoreButton(videos) {
     if (existingButton) {
         existingButton.remove();
     }
-    
+
     // Add new button if there are more videos
     if (hasMoreVideos) {
         const loadMoreBtn = document.createElement('button');
@@ -956,10 +956,10 @@ function updateLoadMoreButton(videos) {
         loadMoreBtn.onclick = () => {
             // Store current scroll position before loading more
             lastScrollPosition = window.scrollY;
-            
+
             currentPage++;
             displayVideos(videos, true);
-            
+
             // Restore scroll position after a short delay to allow DOM updates
             setTimeout(() => {
                 window.scrollTo({
@@ -978,11 +978,11 @@ const efficientScrollHandler = debounce(() => {
     const viewportHeight = window.innerHeight;
     const scrollY = window.scrollY;
     const buffer = viewportHeight * 2; // 2x viewport height buffer
-    
+
     document.querySelectorAll('.video-container').forEach(container => {
         const rect = container.getBoundingClientRect();
         const absoluteTop = rect.top + scrollY;
-        
+
         // Only process containers that are within our buffer zone
         if (absoluteTop >= scrollY - buffer && absoluteTop <= scrollY + viewportHeight + buffer) {
             const videoId = container.closest('.video-wrapper')?.dataset.videoId;
@@ -1005,7 +1005,7 @@ const efficientResizeHandler = debounce(() => {
     // Disconnect all observers and reinitialize
     videoObservers.forEach(observer => observer.disconnect());
     videoObservers.clear();
-    
+
     // Only initialize observers for videos near the viewport
     efficientScrollHandler();
 }, 250);
@@ -1045,7 +1045,7 @@ function inspectVideoContainers() {
     console.log("Inspecting video containers...");
     const containers = document.querySelectorAll('.video-container');
     console.log(`Found ${containers.length} video containers`);
-    
+
     containers.forEach((container, index) => {
         const iframe = container.querySelector('iframe');
         if (iframe) {
@@ -1067,12 +1067,12 @@ function inspectVideoContainers() {
 setTimeout(inspectVideoContainers, 2000);
 
 // Add error handling for edge cases
-window.addEventListener('error', function(event) {
+window.addEventListener('error', function (event) {
     // Ignore YouTube postMessage errors as they're not critical
     if (event.message.includes('postMessage') && event.message.includes('youtube.com')) {
         return;
     }
-    
+
     // Handle other errors
     if (document.getElementById('videoModal').style.display === 'flex') {
         console.error('Error in modal:', event.error);
