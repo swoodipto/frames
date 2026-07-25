@@ -85,6 +85,16 @@
     color: var(--primary-light);
   }
 
+  .noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
   html {
     font: var(--base-typograhy);
     text-transform: var(--brand-casing);
@@ -210,10 +220,17 @@
     font-weight: var(--font-20-weight);
     line-height: var(--font-20-line-height);
     letter-spacing: var(--font-20-letter-spacing);
-    color: var(--primary-dark-200);
+    color: var(--primary-dark-400);
     text-transform: var(--brand-casing);
     position: relative;
     white-space: nowrap;
+    -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+          -moz-user-select: none; /* Old versions of Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+                user-select: none; /* Non-prefixed version, currently
+                                      supported by Chrome, Edge, Opera and Firefox */
   }
 
   .filter-btn sup {
@@ -247,13 +264,20 @@
     color: var(--primary-dark-200);
     margin-top: -28px;
     margin-left: 108px;
+    -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+          -moz-user-select: none; /* Old versions of Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+                user-select: none; /* Non-prefixed version, currently
+                                      supported by Chrome, Edge, Opera and Firefox */
   }
 
   .filter-helper span {
     text-transform: uppercase;
     background-color: var(--primary-light-300);
     padding: 4px 8px;
-    color: var(--primary-dark-200);
+    color: var(--primary-dark-300);
     border-radius: var(--border-radius-small);
     font-size: var(--font-8);
     font-weight: var(--font-8-weight);
