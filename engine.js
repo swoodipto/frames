@@ -24,7 +24,11 @@ async function fetchVideoData() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        return data.videos;
+        // Number videos by their position in the array (chronological order)
+        return data.videos.map((video, index) => ({
+            ...video,
+            number: index + 1
+        }));
     } catch (error) {
         console.error('Error loading videos:', error);
         return [];
