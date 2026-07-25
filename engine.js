@@ -7,6 +7,10 @@ let player;
 // Add this variable to track if the video was paused by scrolling
 let pausedByScrolling = false;
 
+// Track whether the main modal video is currently playing, so suggested
+// video previews can be held paused while it is
+let mainVideoIsPlaying = false;
+
 // Add these variables at the top with other global variables
 let videoObservers = new Map(); // Track observers for each video
 
@@ -267,6 +271,7 @@ async function openModal(videoId) {
 // Function to close modal
 function closeModal() {
     console.log('Closing modal');
+    mainVideoIsPlaying = false;
     if (player) {
         player.destroy();
     }
@@ -581,6 +586,53 @@ function updateLoadMoreButton(videos) {
     }
 }
 
+// Show or hide the thumbnail cover that masks a paused preview.
+// The iframe is cross-origin, so YouTube's paused-state chrome (title bar,
+// play button, end-screen cards) can't be hidden with CSS — we cover it instead.
+function setPreviewCover(container, videoId, visible) {
+    let cover = container.querySelector('.video-paused-cover');
+
+    if (!cover) {
+        cover = document.createElement('div');
+        cover.className = 'video-paused-cover';
+        cover.style.backgroundImage = `url(https://img.youtube.com/vi/${videoId}/mqdefault.jpg)`;
+        container.appendChild(cover);
+    }
+
+    cover.style.opacity = visible ? '1' : '0';
+}
+
+// Send a command to every suggested video preview iframe in the modal
+function setSuggestedVideosPlayback(command) {
+    const suggestedVideosContainer = document.getElementById('suggestedVideos');
+    if (!suggestedVideosContainer) return;
+
+    const pausing = command === 'pauseVideo';
+
+    suggestedVideosContainer.querySelectorAll('iframe').forEach(iframe => {
+        if (!iframe.contentWindow) return;
+
+        const container = iframe.parentElement;
+        const videoId = container.closest('.video-wrapper')?.dataset.videoId;
+
+        // Cover before pausing so YouTube's overlay never flashes into view
+        if (pausing && videoId) {
+            setPreviewCover(container, videoId, true);
+        }
+
+        iframe.contentWindow.postMessage(JSON.stringify({
+            event: 'command',
+            func: command,
+            args: []
+        }), 'https://www.youtube.com');
+
+        // Uncover only once playback has actually resumed
+        if (!pausing && videoId) {
+            setTimeout(() => setPreviewCover(container, videoId, false), 350);
+        }
+    });
+}
+
 // Add function to handle player state changes
 function onPlayerStateChange(event) {
     const suggestedVideosSection = document.querySelector('.suggested-videos-section');
@@ -589,9 +641,17 @@ function onPlayerStateChange(event) {
         // Video is playing, reduce opacity
         suggestedVideosSection.style.opacity = '0.3';
         suggestedVideosSection.style.transition = 'opacity 0.3s ease';
+
+        // Pause the suggested video previews while the main video plays
+        mainVideoIsPlaying = true;
+        setSuggestedVideosPlayback('pauseVideo');
     } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
         // Video is paused or ended, restore opacity
         suggestedVideosSection.style.opacity = '1';
+
+        // Resume the suggested video previews
+        mainVideoIsPlaying = false;
+        setSuggestedVideosPlayback('playVideo');
 
         // If paused by user (not by scrolling), reset the flag
         if (event.data === YT.PlayerState.PAUSED && !pausedByScrolling) {
@@ -809,11 +869,31 @@ function createVideoObserver(container) {
 function loadVideo(container, videoId) {
     // Create iframe with rel=0 and other parameters
     const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube.com/embed/${videoId}?mute=1&controls=0&rel=0&autoplay=1&loop=1&playlist=${videoId}&showinfo=0&cc_load_policy=0&modestbranding=1&vq=small&iv_load_policy=3&fs=0&disablekb=1&playsinline=1`;
+    iframe.src = `https://www.youtube.com/embed/${videoId}?mute=1&controls=0&rel=0&autoplay=1&loop=1&playlist=${videoId}&showinfo=0&cc_load_policy=0&modestbranding=1&vq=small&iv_load_policy=3&fs=0&disablekb=1&playsinline=1&enablejsapi=1`;
 
     iframe.title = "YouTube video player";
     iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
     iframe.loading = "lazy";
+
+    // If this preview scrolls into view while the main modal video is playing,
+    // pause it as soon as it's ready to accept commands
+    iframe.addEventListener('load', () => {
+        if (mainVideoIsPlaying) {
+            // Keep it covered so the pause never shows YouTube's overlay
+            setPreviewCover(container, videoId, true);
+            setTimeout(() => {
+                if (mainVideoIsPlaying && iframe.contentWindow) {
+                    iframe.contentWindow.postMessage(JSON.stringify({
+                        event: 'command',
+                        func: 'pauseVideo',
+                        args: []
+                    }), 'https://www.youtube.com');
+                } else {
+                    setPreviewCover(container, videoId, false);
+                }
+            }, 300);
+        }
+    });
 
     // Apply inline styles
     iframe.style.position = 'absolute';
@@ -845,6 +925,13 @@ function unloadVideo(container, videoId) {
     } else {
         // Make existing placeholder visible again
         placeholder.style.opacity = '1';
+    }
+
+    // Drop the paused cover — the placeholder takes over from here, and a
+    // stale cover would mask the preview when this container is reused
+    const cover = container.querySelector('.video-paused-cover');
+    if (cover) {
+        cover.remove();
     }
 
     // Remove the iframe after a short delay to prevent layout shift
@@ -903,11 +990,27 @@ function addPlaceholderStyles() {
             padding: 0 !important;
         }
         
-        /* Hide YouTube player chrome */
-        .ytp-chrome-top, .ytp-chrome-bottom {
-            display: none !important;
+        /* Thumbnail cover that masks YouTube's paused-state overlay.
+           The embed is cross-origin, so its controls can't be styled from
+           here — this sits on top of the iframe instead. */
+        .video-paused-cover {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-color: var(--primary-dark-400) !important;
+            border-radius: var(--border-radius-small) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            z-index: 2 !important;
+            pointer-events: none !important;
+            opacity: 0;
+            transition: opacity 0.2s ease !important;
         }
-        
+
         /* Force aspect ratio for YouTube player */
         .video-container iframe {
             object-fit: cover !important;

@@ -3,9 +3,10 @@
   "configurations": [
     {
       "name": "frames-static",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8720"],
-      "port": 8720
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "python3 -m http.server \"$PORT\""],
+      "port": 8720,
+      "autoPort": true
     }
   ]
 }
